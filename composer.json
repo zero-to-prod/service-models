@@ -1,0 +1,42 @@
+{
+    "name": "zero-to-prod/service-model",
+    "description": "Typesafe DTOs inspired by Laravel's Eloquent models.",
+    "keywords": [
+        "zero-to-prod",
+        "service-model",
+        "service model"
+    ],
+    "homepage": "https://github.com/zero-to-prod/service-model",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Smith",
+            "email": "dave0016@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zerotoprod\\ServiceModel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Zerotoprod\\AppServiceModel\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "pestphp/pest": "^2.19",
+        "larapack/dd": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
