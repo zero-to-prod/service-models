@@ -13,6 +13,7 @@ maintainable.
 
 ## Features
 
+- **Zero Dependency**: This package does not have any package dependencies.
 - **ServiceModel Trait**: Simplifies the creation of service models.
 - **Automatic Casting**: Attributes like `#[Cast]` and `#[CastToArray]` allow automatic type conversion.
 - **Extensible**: Create your own casters for arrays and custom data types.
