@@ -20,7 +20,7 @@ maintainable.
 ## Installation
 
 ```bash
-composer require zerotoprod/service-models
+composer require zero-to-prod/service-model
 ```
 
 ## Usage
