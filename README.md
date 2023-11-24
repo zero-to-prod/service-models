@@ -132,7 +132,7 @@ class Order
     use ServiceModel;
 
     #[CastToCollection(View::class)]
-    public array $views;
+    public Collection $views;
 }
 ```
 
