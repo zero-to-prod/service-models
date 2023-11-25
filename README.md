@@ -1,17 +1,17 @@
 # Service Models
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg?style=flat-square)](https://packagist.org/packages/zero-to-prod/service-model)
+![Test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
+
+[//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41;)
+
 Simple, extensible, typesafe DTOs.
 
-## Introduction
-
-This **zero-dependency** package turns **associative arrays** into nested, **typesafe** Data Transfer Objects (DTOs). It
-utilizes **native** PHP types and attributes to automatically map your data onto the properties of your models.
-
-## Features
+This **zero-dependency** package turns associative arrays into nested, typesafe Data Transfer Objects (DTOs). It utilizes native PHP types and attributes to automatically map your data to properties of your models.
 
 - **Simple**: Seamlessly integrate the `ServiceModel` trait into any class for automatic data-to-model mapping.
 - **Native Type Casting**: Automatically cast your data by defining a type on a property.
-- **One-to-One/One-to-Many Relationships**: Easily define custom types using PHP attributes.
+- **Custom Casts**: Easily define custom types or remap existing ones using PHP attributes.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
