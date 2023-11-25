@@ -1,5 +1,5 @@
 # Service Models
-
+[![Repo](https://img.shields.io/badge/Repo-8A2BE2)](https://github.com/zero-to-prod/service-models)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg?style=flat-square)](https://packagist.org/packages/zero-to-prod/service-model)
 ![Test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 
