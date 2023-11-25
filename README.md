@@ -11,7 +11,7 @@ utilizes **native** PHP types and attributes to automatically map your data onto
 
 - **Simple**: Seamlessly integrate the `ServiceModel` trait into any class for automatic data-to-model mapping.
 - **Native Type Casting**: Automatically cast your data by defining a type on a property.
-- **Custom Casts**: Easily define custom types or remap existing ones using PHP attributes.
+- **One-to-One/One-to-Many Relationships**: Easily define custom types using PHP attributes.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
