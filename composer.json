@@ -1,10 +1,15 @@
 {
     "name": "zero-to-prod/service-model",
-    "description": "Typesafe DTOs inspired by Laravel's Eloquent models.",
+    "description": "Simple, extensible, typesafe DTOs.",
     "keywords": [
-        "zero-to-prod",
+        "service models",
+        "dto",
+        "model",
+        "models",
         "service-model",
-        "service model"
+        "service model",
+        "zero-to-prod",
+        "data transfer object"
     ],
     "homepage": "https://github.com/zero-to-prod/service-model",
     "license": "MIT",
