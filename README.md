@@ -4,7 +4,8 @@ Simple, extensible, typesafe DTOs.
 
 ## Introduction
 
-This **zero-dependency** package turns **associative arrays** into nested, **typesafe** Data Transfer Objects (DTOs). It utilizes **native** PHP types and attributes to automatically map your data onto the properties of your models.
+This **zero-dependency** package turns **associative arrays** into nested, **typesafe** Data Transfer Objects (DTOs). It
+utilizes **native** PHP types and attributes to automatically map your data onto the properties of your models.
 
 ## Features
 
@@ -26,6 +27,7 @@ You can create instances of your models using the `make()` method.
 ```php
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
+    'status' => 'pending',
     'ordered_at' => '2021-01-01 00:00:00',
     'items' => [
         ['id' => 1,'name' => 'Item 1'],
@@ -35,16 +37,20 @@ $order = Order::make([
         ['id' => 2,'name' => 'View 2']],
 ]);
 ```
+
 ## Accessing Type Safe Properties
+
 Access the properties directly from your model instances.
+
 ```php
-$details = $order->details;
-$ordered_at = $order->ordered_at->toDateTimeString();
-$item_id = $order->items[0]->id;
-$view_name = $order->views->first()->name;
+$details = $order->details->name; // 'Order 1'
+$ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
+$item_id = $order->items[0]->id; // 1
+$view_name = $order->views->first()->name; // 'View 1'
 ```
 
 ## Implementation
+
 Pull in the `ServiceModel` trait in your classes to automatically map and cast your data to properties on your models.
 
 ```php
@@ -62,6 +68,11 @@ class Order
      * map the data.
      */
     public OrderDetails $details;
+    
+    /**
+     * Use a value backed enum to automatically cast the value.
+     */
+    public Status $status;
 
     /**
      * Custom cast for a one-to-one relationship.
@@ -84,7 +95,30 @@ class Order
     #[CastToCollection(View::class)]
     public array $views;
 }
+```
 
+## Basic Class Implementation
+
+Define properties on your class that match the keys in your data. The `ServiceModel` trait will automatically map the
+data onto your properties.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+
+    /**
+     * Using the `ServiceModel` trait in the 
+     * OrderDetails class will automatically 
+     * map the data.
+     */
+    public OrderDetails $details;
+}
+```
+
+```php
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class OrderDetails
@@ -94,37 +128,71 @@ class OrderDetails
     public int $id;
     public string $name;
 }
+```
 
-use Zerotoprod\ServiceModel\CanCast;
+```php
+$order = Order::make([
+    'details' => ['id' => 1, 'name' => 'Order 1'],
+]);
 
-class ToCarbon implements CanCast
+$order->details->id; // 1
+$order->details->name; // 'Order 1'
+```
+
+## Enum Implementation
+
+Use a value backed enum to automatically cast the value.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
 {
-    public function set($value): Carbon
-    {
-        return Carbon::parse($value);
-    }
-}
-
-use Zerotoprod\ServiceModel\CanCast;
-
-#[Attribute]
-class CastToCollection implements CanCast
-{
-    public function __construct(public readonly string $class)
-    {
-    }
-
-    public function set($value): Collection
-    {
-        return collect($value)->map(fn(array $item) => $this->class::make($item));
-    }
+    use ServiceModel;
+    
+    public Status $status;
 }
 ```
-## Custom Cast
+
+```php
+enum Status: string
+{
+    case pending = 'pending';
+    case completed = 'completed';
+}
+````
+
+```php
+$order = Order::make([
+    'status' => 'pending',
+]);
+
+$order->status; // Status::pending
+$order->status->value; // 'pending'
+```
+
+## Custom Cast for One-to-One Relationships
 
 Implement custom casting logic using classes that implement the `CanCast` interface.
 
 ```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+
+    /**
+     * Custom cast for a one-to-one relationship.
+     * @var Item[] $items
+     */
+    #[Cast(ToCarbon::class)]
+    public Carbon $ordered_at;
+```
+
+```php
+use Zerotoprod\ServiceModel\CanCast;
+
 class ToCarbon implements CanCast
 {
     public function set($value): Carbon
@@ -133,11 +201,22 @@ class ToCarbon implements CanCast
     }
 }
 ```
-## Custom Cast for Collections/Arrays
-
-You can decorate your class properties with a custom caster for collections/arrays like this:
 
 ```php
+$order = Order::make([
+    'ordered_at' => '2021-01-01 00:00:00',
+]);
+
+$order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
+```
+
+## Custom Cast for One-to-Many Relationships
+
+Implement a custom cast for a one-to-many relationship.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
 class Order
 {
     use ServiceModel;
@@ -148,6 +227,8 @@ class Order
 ```
 
 ```php
+use Zerotoprod\ServiceModel\CanCast;
+
 #[Attribute]
 class CastToCollection implements CanCast
 {
@@ -160,4 +241,14 @@ class CastToCollection implements CanCast
         return collect($value)->map(fn(array $item) => $this->class::make($item));
     }
 }
+```
+
+```php
+$order = Order::make([
+    'views' => [
+        ['id' => 1,'name' => 'View 1'],
+        ['id' => 2,'name' => 'View 2']],
+]);
+
+$order->views->first()->name; // 'View 1'
 ```
