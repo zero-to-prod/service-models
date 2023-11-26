@@ -10,12 +10,11 @@ Simple, extensible, typesafe DTOs.
 
 This **zero-dependency** package transforms associative arrays into nested, typesafe Data Transfer Objects (DTOs). 
 
-Types assigned to properties on your models are used to automatically map and cast your data to type-safe structures.
+## Features
 
-- **Simple**: Use the `ServiceModel` trait  for automatic data-to-model mapping.
-- **Native Type Casting**: Automatically cast values by defining a type on a property.
+- **Simple**: Use the `ServiceModel` trait to automatically map your data.
 - **Custom Type Casting**: Define your own casters for infinite control.
-- **One-to-One/One-to-Many Relationships**: Easily define relationsihips with attributes.
+- **`HasOne`/`HasMany` Relationships**: Easily define relationsihips with attributes.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
@@ -26,7 +25,7 @@ composer require zero-to-prod/service-model
 
 ## Usage
 
-Create a DTO by passing an associative array to the `make()` method of your model.
+Create a DTO by passing an associative array to the `make()` method of your model that has the `ServiceModel` trait.
 
 ```php
 $order = Order::make([
@@ -44,7 +43,7 @@ $order = Order::make([
 
 ## Accessing Type Safe Properties
 
-Access properties directly from your models.
+Access your data directly using the arrow syntax.
 
 ```php
 $details = $order->details->name; // 'Order 1'
@@ -55,7 +54,7 @@ $view_name = $order->views->first()->name; // 'View 1'
 
 ## Implementation
 
-Pull in the `ServiceModel` trait in your classes to automatically map and cast your data to properties on your models.
+Use the `ServiceModel` trait in your classes to automatically map and cast your data to properties on your models.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -78,21 +77,21 @@ class Order
     public Status $status;
 
     /**
-     * Custom cast for a one-to-one relationship.
+     * Custom cast for a hasOne relationship.
      * @var Item[] $items
      */
     #[Cast(ToCarbon::class)]
     public Carbon $ordered_at;
 
     /**
-     * Custom cast for a one-to-many relationship.
+     * Custom cast for a hasMany relationship.
      * @var Item[] $items
      */
     #[CastToArray(Item::class)]
     public array $items;
     
     /**
-     * Create your own one-to-many casts. 
+     * Use a custom hasMany cast. 
      * @var Collection<int, View> $views
      */
     #[CastToCollection(View::class)]
@@ -102,8 +101,9 @@ class Order
 
 ## Basic Class Implementation
 
-Define properties on your class that match the keys in your data. The `ServiceModel` trait will automatically map the
-data onto your properties.
+Define properties in your class that match the keys of your data. 
+
+The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -120,6 +120,8 @@ class Order
 }
 ```
 
+> IMPORTANT: You must use the `ServiceModel` trait in the child classes.
+
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
 
@@ -132,9 +134,14 @@ class OrderDetails
 }
 ```
 
+> NOTICE: the `details` key matches the `$details` property in the `Order` class.
+
 ```php
 $order = Order::make([
-    'details' => ['id' => 1, 'name' => 'Order 1'],
+    'details' => [
+        'id' => 1, 
+        'name' => 'Order 1'
+    ],
 ]);
 
 $order->details->id; // 1
@@ -173,9 +180,9 @@ $order->status; // Status::pending
 $order->status->value; // 'pending'
 ```
 
-## Custom Cast for One-to-One Relationships
+## Custom Cast for `HasOne` Relationships
 
-Implement custom casting logic using classes that implement the `CanCast` interface.
+Implement the `CanCast` interface to make a custom type cast.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -185,7 +192,7 @@ class Order
     use ServiceModel;
 
     /**
-     * Custom cast for a one-to-one relationship.
+     * Custom cast for a hasOne relationship.
      * @var Item[] $items
      */
     #[Cast(ToCarbon::class)]
@@ -212,9 +219,9 @@ $order = Order::make([
 $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 ```
 
-## Custom Cast for One-to-Many Relationships
+## Custom Cast for `HasMany` Relationships
 
-Implement a custom cast for a one-to-many relationship.
+Implement a custom cast for a `hasMany` relationship.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -227,6 +234,10 @@ class Order
     public Collection $views;
 }
 ```
+
+> IMPORTANT: The class name passed in the Attribute (`View::class`) is passed in the constructor of the `CastToCollection` class.
+
+> IMPORTANT: Don't forget to add `#[Attribute]` to the top of your class.
 
 ```php
 use Zerotoprod\ServiceModel\CanCast;
@@ -248,8 +259,15 @@ class CastToCollection implements CanCast
 ```php
 $order = Order::make([
     'views' => [
-        ['id' => 1,'name' => 'View 1'],
-        ['id' => 2,'name' => 'View 2']],
+        [
+            'id' => 1,
+            'name' => 'View 1'
+        ],
+        [
+            'id' => 2,
+            'name' => 'View 2'
+        ]
+    ],
 ]);
 
 $order->views->first()->name; // 'View 1'
