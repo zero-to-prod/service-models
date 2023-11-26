@@ -14,7 +14,7 @@ This **zero-dependency** package transforms associative arrays into nested, type
 
 - **Simple**: Use the `ServiceModel` trait to automatically map your data.
 - **Custom Type Casting**: Define your own casters for infinite control.
-- **`HasOne`/`HasMany` Relationships**: Easily define relationsihips with attributes.
+- **`HasOne`/`HasMany`**: Easily define relationships with attributes.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
@@ -101,7 +101,7 @@ class Order
 
 ## Basic Class Implementation
 
-Define properties in your class that match the keys of your data. 
+Define properties in your class to match the keys of your data. 
 
 The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
 
