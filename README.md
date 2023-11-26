@@ -1,17 +1,21 @@
 # Service Models
-[![Repo](https://img.shields.io/badge/Repo-8A2BE2)](https://github.com/zero-to-prod/service-models)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg?style=flat-square)](https://packagist.org/packages/zero-to-prod/service-model)
+
+[![Repo](https://img.shields.io/badge/github-gray?logo=github)](https://github.com/zero-to-prod/service-models)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg)](https://packagist.org/packages/zero-to-prod/service-model)
 ![Test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 
 [//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41;)
 
 Simple, extensible, typesafe DTOs.
 
-This **zero-dependency** package turns associative arrays into nested, typesafe Data Transfer Objects (DTOs). It utilizes native PHP types and attributes to automatically map your data to properties of your models.
+This **zero-dependency** package transforms associative arrays into nested, typesafe Data Transfer Objects (DTOs). 
 
-- **Simple**: Seamlessly integrate the `ServiceModel` trait into any class for automatic data-to-model mapping.
-- **Native Type Casting**: Automatically cast your data by defining a type on a property.
-- **One-to-One/One-to-Many Relationships**: Easily define custom types using PHP attributes.
+Types assigned to properties on your models are used to automatically map and cast your data to type-safe structures.
+
+- **Simple**: Use the `ServiceModel` trait  for automatic data-to-model mapping.
+- **Native Type Casting**: Automatically cast values by defining a type on a property.
+- **Custom Type Casting**: Define your own casters for infinite control.
+- **One-to-One/One-to-Many Relationships**: Easily define relationsihips with attributes.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
@@ -22,7 +26,7 @@ composer require zero-to-prod/service-model
 
 ## Usage
 
-You can create instances of your models using the `make()` method.
+Create a DTO by passing an associative array to the `make()` method of your model.
 
 ```php
 $order = Order::make([
@@ -40,7 +44,7 @@ $order = Order::make([
 
 ## Accessing Type Safe Properties
 
-Access the properties directly from your model instances.
+Access properties directly from your models.
 
 ```php
 $details = $order->details->name; // 'Order 1'
@@ -63,14 +67,13 @@ class Order
     use ServiceModel;
 
     /**
-     * Using the `ServiceModel` trait in the 
-     * OrderDetails class will automatically 
-     * map the data.
+     * Using the `ServiceModel` trait in OrderDetails
+     * class will automatically map the data.
      */
     public OrderDetails $details;
     
     /**
-     * Use a value backed enum to automatically cast the value.
+     * Use a value-backed enum to automatically cast the value.
      */
     public Status $status;
 
@@ -110,9 +113,8 @@ class Order
     use ServiceModel;
 
     /**
-     * Using the `ServiceModel` trait in the 
-     * OrderDetails class will automatically 
-     * map the data.
+     * Using the `ServiceModel` trait in OrderDetails
+     * class will automatically map the data.
      */
     public OrderDetails $details;
 }
