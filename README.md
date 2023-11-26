@@ -43,7 +43,7 @@ $order = Order::make([
 
 ## Accessing Type Safe Properties
 
-Access your data directly using the arrow syntax.
+Access your data with the arrow syntax.
 
 ```php
 $details = $order->details->name; // 'Order 1'
@@ -54,7 +54,7 @@ $view_name = $order->views->first()->name; // 'View 1'
 
 ## Implementation
 
-Use the `ServiceModel` trait in your classes to automatically map and cast your data to properties on your models.
+Use the `ServiceModel` trait to automatically map and cast your data to properties in your models.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -120,7 +120,7 @@ class Order
 }
 ```
 
-> IMPORTANT: You must use the `ServiceModel` trait in the child classes.
+> IMPORTANT: Use the `ServiceModel` trait in the child classes.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
@@ -134,7 +134,7 @@ class OrderDetails
 }
 ```
 
-> NOTICE: the `details` key matches the `$details` property in the `Order` class.
+> NOTICE: The `details` key matches the `$details` property in `Order`.
 
 ```php
 $order = Order::make([
@@ -182,7 +182,7 @@ $order->status->value; // 'pending'
 
 ## Custom Cast for `HasOne` Relationships
 
-Implement the `CanCast` interface to make a custom type cast.
+Implement the `CanCast` interface to make a custom type.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
