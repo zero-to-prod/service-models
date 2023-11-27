@@ -30,7 +30,7 @@ trait ServiceModel
             $reflection_property = $property_cache[$key] ?? $ReflectionClass->getProperty($key);
             $property_cache[$key] = $reflection_property;
 
-            $property_type_name = $reflection_property->getType()->getName();
+            $property_type_name = $reflection_property->getType()?->getName() ?? 'string';
             $attributes = $reflection_property->getAttributes();
 
             if (!empty($attributes) && $attributes[0]->getName() === Cast::class) {
