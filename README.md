@@ -15,6 +15,7 @@ This **zero-dependency** package transforms associative arrays into nested, type
 - **Simple**: Use the `ServiceModel` trait to automatically map your data.
 - **Custom Type Casting**: Define your own casters for infinite control.
 - **`HasOne`/`HasMany`**: Easily define relationships with attributes.
+- **Factory Support**: Use the `factory()` method to make a DTO with default values.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
@@ -50,6 +51,18 @@ $details = $order->details->name; // 'Order 1'
 $ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 $item_id = $order->items[0]->id; // 1
 $view_name = $order->views->first()->name; // 'View 1'
+```
+
+## Factory Support
+
+Use the `factory()` method to make a new DTO with default values.
+
+See the [Factories](#factories) section for more information.
+
+```php
+$order = Order::factory()->make();
+
+$order->status; // Status::pending
 ```
 
 ## Implementation
@@ -271,4 +284,61 @@ $order = Order::make([
 ]);
 
 $order->views->first()->name; // 'View 1'
+```
+## Factories
+
+Factories provide a convenient way to generate DTOs with default values.
+
+1. Use the `ServiceModel` and the  `HasFactory` trait in your model.
+2. Create a class that `extends` the `Factory` class for your factory.
+3. Set the `public string $model = ` property in your factory pointing to your model.
+4. Set the `public static string $factory = ` property in your model pointing to your factory.
+5. Return your default values as an array in the `definition()` method in your factory.
+
+```php
+use Zerotoprod\ServiceModel\HasFactory;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+    use HasFactory;
+
+    public static string $factory = OrderFactory::class;
+    
+    public OrderDetails $details;
+    public Status $status;
+}
+```
+
+```php
+use Zerotoprod\ServiceModel\Factory;
+
+class OrderFactory extends Factory
+{
+    public string $model = Order::class;
+
+    public function definition(): array
+    {
+        return [
+            'details' => ['id' => 1, 'name' => 'Order 1'],
+            'status' => 'pending',
+        ];
+    }
+
+    public function setStatus(Status $status): self
+    {
+        return $this->state(fn() => [
+            'status' => $status->value
+        ]);
+    }
+}
+```
+```php
+$order = Order::factory()->make();
+$order->status; // Status::pending
+$order->details->name; // 'Order 1'
+
+$order = Order::factory()->setStatus(Status::completed)->make();
+$order->status; // Status::completed
 ```
