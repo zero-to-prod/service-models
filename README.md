@@ -15,7 +15,7 @@ This **zero-dependency** package transforms associative arrays into nested, type
 - **Simple**: Use the `ServiceModel` trait to automatically map your data.
 - **Custom Type Casting**: Define your own casters for infinite control.
 - **`HasOne`/`HasMany`**: Easily define relationships with attributes.
-- **Factory Support**: Use the `factory()` method to make a new DTO with default values.
+- **Factory Support**: Use the `factory()` method to make a DTO with default values.
 - **Enum Support**: Cast enums directly, with no extra steps.
 
 ## Installation
@@ -56,6 +56,8 @@ $view_name = $order->views->first()->name; // 'View 1'
 ## Factory Support
 
 Use the `factory()` method to make a new DTO with default values.
+
+See the [Factories](#factories) section for more information.
 
 ```php
 $order = Order::factory()->make();
