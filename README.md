@@ -334,3 +334,11 @@ class OrderFactory extends Factory
     }
 }
 ```
+```php
+$order = Order::factory()->make();
+$order->status; // Status::pending
+$order->details->name; // 'Order 1'
+
+$order = Order::factory()->setStatus(Status::completed)->make();
+$order->status; // Status::completed
+```
