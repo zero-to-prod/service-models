@@ -37,7 +37,7 @@
     "prefer-stable": true,
     "require-dev": {
         "pestphp/pest": "^2.19",
-        "larapack/dd": "*"
+        "larapack/dd": "^1.1"
     },
     "config": {
         "allow-plugins": {
