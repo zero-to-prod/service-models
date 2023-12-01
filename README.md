@@ -32,6 +32,7 @@ Create a DTO by passing an associative array to the `make()` method of your mode
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
     'status' => 'pending',
+    'tags' => ['important', 'rush'],
     'ordered_at' => '2021-01-01 00:00:00',
     'items' => [
         ['id' => 1,'name' => 'Item 1'],
@@ -88,6 +89,13 @@ class Order
      * Use a value-backed enum to automatically cast the value.
      */
     public Status $status;
+    
+    /**
+     * Casts to an array of enums.
+     * @var Tag[] $tags
+     */
+    #[CastToArray(Tag::class)]
+    public array $tags;
 
     /**
      * Custom cast for a hasOne relationship.
@@ -173,6 +181,13 @@ class Order
     use ServiceModel;
     
     public Status $status;
+    
+    /**
+     * Casts to an array of enums.
+     * @var Tag[] $tags
+     */
+    #[CastToArray(Tag::class)]
+    public array $tags;
 }
 ```
 
@@ -182,15 +197,25 @@ enum Status: string
     case pending = 'pending';
     case completed = 'completed';
 }
+
+enum Tag: string
+{
+    case important = 'important';
+    case rush = 'rush';
+}
 ````
 
 ```php
 $order = Order::make([
     'status' => 'pending',
+    'tags' => ['important', 'rush'],
 ]);
 
 $order->status; // Status::pending
 $order->status->value; // 'pending'
+
+$order->tags[0]; // Tag::important
+$order->tags[0]->value; // 'important'
 ```
 
 ## Custom Cast for `HasOne` Relationships
