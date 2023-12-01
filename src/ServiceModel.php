@@ -40,7 +40,9 @@ trait ServiceModel
                 continue;
             }
 
-            if (method_exists($property_type_name, 'make') && in_array(ServiceModel::class, $traitNames, true)) {
+            if (method_exists($property_type_name, 'make')
+                && in_array(ServiceModel::class, $traitNames, true)
+            ) {
                 $this->{$key} = !empty($attributes[0])
                     ? (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set($item)
                     : $property_type_name::make($item);
@@ -48,8 +50,21 @@ trait ServiceModel
                 continue;
             }
 
-            if ($attributes && $property_type_name === 'array' && method_exists($attributes[0]->getArguments()[0], 'make')) {
+            if ($attributes
+                && $property_type_name === 'array'
+                && method_exists($attributes[0]->getArguments()[0], 'make')
+            ) {
                 $this->{$key} = (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set($item);
+
+                continue;
+            }
+
+            if(isset($attributes[0])
+                && $attributes[0]->getName() === CastToArray::class
+                && enum_exists($attributes[0]->getArguments()[0])
+            ) {
+                $enum = $attributes[0]->getArguments()[0];
+                $this->{$key} = array_map(fn($value) => $enum::tryFrom($value), $item);
 
                 continue;
             }
