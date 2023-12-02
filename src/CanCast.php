@@ -4,5 +4,5 @@ namespace Zerotoprod\ServiceModel;
 
 interface CanCast
 {
-    public function set($value);
+    public function set(array $value);
 }
