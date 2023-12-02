@@ -35,7 +35,7 @@ $order = Order::make([
     'tags' => ['important', 'rush'],
     'ordered_at' => '2021-01-01 00:00:00',
     'items' => [
-        ['id' => 1,'name' => 'Item 1'],
+        Item::make(['id' => 1,'name' => 'Item 1']),
         ['id' => 2,'name' => 'Item 2']],
     'views' => [
         ['id' => 1,'name' => 'View 1'],
@@ -163,6 +163,15 @@ $order = Order::make([
         'id' => 1, 
         'name' => 'Order 1'
     ],
+]);
+
+// this is also equivalent
+
+$order = Order::make([
+    'details' => OrderDetail::make([
+        'id' => 1, 
+        'name' => 'Order 1'
+    ]),
 ]);
 
 $order->details->id; // 1

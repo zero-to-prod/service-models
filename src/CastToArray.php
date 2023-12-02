@@ -10,7 +10,7 @@ class CastToArray implements CanCast
     {
     }
 
-    public function set($value): array
+    public function set(array $value): array
     {
         $results = [];
 

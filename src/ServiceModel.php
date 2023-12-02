@@ -6,7 +6,7 @@ use ReflectionClass;
 
 trait ServiceModel
 {
-    public function __construct(?array $items)
+    public function __construct($items = null)
     {
         if ($items === null) {
             return;
@@ -35,7 +35,7 @@ trait ServiceModel
 
             if (!empty($attributes) && $attributes[0]->getName() === Cast::class) {
                 $class = $attributes[0]->getArguments()[0];
-                $this->{$key} = (new $class)->set($item);
+                $this->{$key} = (new $class)->set((array)$item);
 
                 continue;
             }
@@ -44,7 +44,7 @@ trait ServiceModel
                 && in_array(ServiceModel::class, $traitNames, true)
             ) {
                 $this->{$key} = !empty($attributes[0])
-                    ? (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set($item)
+                    ? (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set((array)$item)
                     : $property_type_name::make($item);
 
                 continue;
@@ -54,12 +54,12 @@ trait ServiceModel
                 && $property_type_name === 'array'
                 && method_exists($attributes[0]->getArguments()[0], 'make')
             ) {
-                $this->{$key} = (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set($item);
+                $this->{$key} = (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set((array)$item);
 
                 continue;
             }
 
-            if(isset($attributes[0])
+            if (isset($attributes[0])
                 && $attributes[0]->getName() === CastToArray::class
                 && enum_exists($attributes[0]->getArguments()[0])
             ) {
@@ -82,7 +82,7 @@ trait ServiceModel
     /**
      * Create a new instance and set its attributes.
      */
-    public static function make(?array $items = null): self
+    public static function make($items = null): self
     {
         return new self($items);
     }
