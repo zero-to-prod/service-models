@@ -7,7 +7,7 @@ use Zerotoprod\ServiceModel\CanCast;
 
 class ToChild implements CanCast
 {
-    public function set($value): ChildWithoutTrait
+    public function set(array $value): ChildWithoutTrait
     {
         $child = new ChildWithoutTrait;
         $child->name = $value['name'];
