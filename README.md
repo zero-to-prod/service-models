@@ -251,9 +251,9 @@ use Zerotoprod\ServiceModel\CanCast;
 
 class ToCarbon implements CanCast
 {
-    public function set($value): Carbon
+    public function set(array $value): Carbon
     {
-        return Carbon::parse($value);
+        return Carbon::parse($value[0]);
     }
 }
 ```
@@ -296,7 +296,7 @@ class CastToCollection implements CanCast
     {
     }
 
-    public function set($value): Collection
+    public function set(array $value): Collection
     {
         return collect($value)->map(fn(array $item) => $this->class::make($item));
     }
