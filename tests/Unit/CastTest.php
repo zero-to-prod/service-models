@@ -4,8 +4,16 @@ use Zerotoprod\AppServiceModel\Tests\Models\Child;
 use Zerotoprod\AppServiceModel\Tests\Models\ChildWithoutTrait;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevel;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevelCast;
+use Zerotoprod\AppServiceModel\Tests\Models\ValueCast;
 use Zerotoprod\AppServiceModel\Tests\Models\WrongChild;
 
+test('top level value cast', function () {
+    $ValueCast = ValueCast::make([
+        ValueCast::value => 3
+    ]);
+    expect($ValueCast->value)->toBeInt()
+        ->and($ValueCast->value)->toBe(4);
+});
 test('top level cast', function () {
     $TopLevelCast = TopLevelCast::make([
         TopLevelCast::child => [
