@@ -11,22 +11,26 @@ trait ServiceModel
         if (!$items) {
             return;
         }
-        $reflection_cache = [];
-        $model = [];
-        $reflection_cache[static::class] = new ReflectionClass($this);
-        $ReflectionClass = $reflection_cache[static::class];
+
+        $reflection_classes = [];
+        $model_classnames = [];
+        $reflection_classes[static::class] = new ReflectionClass($this);
+        $ReflectionClass = $reflection_classes[static::class];
+
         foreach ($items as $key => $value) {
             // Ignore non-existing properties
             if (!$ReflectionClass->hasProperty($key)) {
                 continue;
             }
+
             // Caching
             $cache_key = static::class . '::' . $key;
-            $reflection_cache[$cache_key] = $ReflectionClass->getProperty($key);
-            $ReflectionProperty = $reflection_cache[$cache_key];
-            $model[$cache_key] = $ReflectionProperty->getType()?->getName() ?? 'string';
-            $model_classname = $model[$cache_key];
+            $reflection_classes[$cache_key] = $ReflectionClass->getProperty($key);
+            $ReflectionProperty = $reflection_classes[$cache_key];
+            $model_classnames[$cache_key] = $ReflectionProperty->getType()?->getName() ?? 'string';
+
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
+            $model_classname = $model_classnames[$cache_key];
 
             if (!$ReflectionAttribute) {
                 // One-to-One Cast
@@ -43,9 +47,9 @@ trait ServiceModel
 
                 // Native types
                 $this->{$key} = $value;
-
                 continue;
             }
+
             $cast_classname = $ReflectionAttribute->getArguments()[0];
             $attribute_classname = $ReflectionAttribute->getName();
 
