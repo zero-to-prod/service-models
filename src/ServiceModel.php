@@ -12,25 +12,34 @@ trait ServiceModel
             return;
         }
 
-        $reflection_classes = [];
-        $model_classnames = [];
-        $reflection_classes[static::class] = new ReflectionClass($this);
-        $ReflectionClass = $reflection_classes[static::class];
+        $Cache = Cache::getInstance();
+
+        if (!$Cache->get(static::class)) {
+            $Cache->set(static::class, new ReflectionClass($this));
+        }
+
+        $ReflectionClass = $Cache->get(static::class);
 
         foreach ($items as $key => $value) {
-            // Ignore non-existing properties
             if (!$ReflectionClass->hasProperty($key)) {
                 continue;
             }
 
-            // Caching
             $cache_key = static::class . '::' . $key;
-            $reflection_classes[$cache_key] = $ReflectionClass->getProperty($key);
-            $ReflectionProperty = $reflection_classes[$cache_key];
-            $model_classnames[$cache_key] = $ReflectionProperty->getType()?->getName() ?? 'string';
 
+            if (!$Cache->get($cache_key)) {
+                $Cache->set($cache_key, $ReflectionClass->getProperty($key));
+            }
+
+            $ReflectionProperty = $Cache->get($cache_key);
+
+            if (!$Cache->get($cache_key . '::type')) {
+                $Cache->set($cache_key . '::type', $ReflectionProperty->getType()?->getName() ?? 'string');
+            }
+
+            $model_classname = $Cache->get($cache_key . '::type');
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
-            $model_classname = $model_classnames[$cache_key];
+
 
             if (!$ReflectionAttribute) {
                 // One-to-One Cast
