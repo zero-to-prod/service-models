@@ -6,82 +6,67 @@ use ReflectionClass;
 
 trait ServiceModel
 {
-    public function __construct($items = null)
+    public function __construct(mixed $items = null)
     {
-        if ($items === null) {
+        if (!$items) {
             return;
         }
-
-        static $ReflectionClass = null;
-        static $property_cache = [];
-        static $traitNames = null;
-        static $enum_cache = [];
-
-        if ($ReflectionClass === null) {
-            $ReflectionClass = new ReflectionClass($this);
-            $traitNames = $ReflectionClass->getTraitNames();
-        }
-
-        foreach ($items as $key => $item) {
+        $reflection_cache = [];
+        $model = [];
+        $reflection_cache[static::class] = new ReflectionClass($this);
+        $ReflectionClass = $reflection_cache[static::class];
+        foreach ($items as $key => $value) {
+            // Ignore non-existing properties
             if (!$ReflectionClass->hasProperty($key)) {
                 continue;
             }
+            // Caching
+            $cache_key = static::class . '::' . $key;
+            $reflection_cache[$cache_key] = $ReflectionClass->getProperty($key);
+            $ReflectionProperty = $reflection_cache[$cache_key];
+            $model[$cache_key] = $ReflectionProperty->getType()?->getName() ?? 'string';
+            $model_classname = $model[$cache_key];
+            $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
 
-            $reflection_property = $property_cache[$key] ?? $ReflectionClass->getProperty($key);
-            $property_cache[$key] = $reflection_property;
+            if (!$ReflectionAttribute) {
+                // One-to-One Cast
+                if (method_exists($model_classname, 'make')) {
+                    $this->{$key} = $model_classname::make($value);
+                    continue;
+                }
 
-            $property_type_name = $reflection_property->getType()?->getName() ?? 'string';
-            $attributes = $reflection_property->getAttributes();
+                // Enums
+                if (enum_exists($model_classname)) {
+                    $this->{$key} = $model_classname::tryFrom($value);
+                    continue;
+                }
 
-            if (!empty($attributes) && $attributes[0]->getName() === Cast::class) {
-                $class = $attributes[0]->getArguments()[0];
-                $this->{$key} = (new $class)->set((array)$item);
-
-                continue;
-            }
-
-            if (method_exists($property_type_name, 'make')
-                && in_array(ServiceModel::class, $traitNames, true)
-            ) {
-                $this->{$key} = !empty($attributes[0])
-                    ? (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set((array)$item)
-                    : $property_type_name::make($item);
-
-                continue;
-            }
-
-            if ($attributes
-                && $property_type_name === 'array'
-                && method_exists($attributes[0]->getArguments()[0], 'make')
-            ) {
-                $this->{$key} = (new ($attributes[0]->getName())($attributes[0]->getArguments()[0]))->set((array)$item);
+                // Native types
+                $this->{$key} = $value;
 
                 continue;
             }
+            $cast_classname = $ReflectionAttribute->getArguments()[0];
+            $attribute_classname = $ReflectionAttribute->getName();
 
-            if (isset($attributes[0])
-                && $attributes[0]->getName() === CastToArray::class
-                && enum_exists($attributes[0]->getArguments()[0])
-            ) {
-                $enum = $attributes[0]->getArguments()[0];
-                $this->{$key} = array_map(fn($value) => $enum::tryFrom($value), $item);
-
+            // One-to-many custom cast
+            if (method_exists($cast_classname, 'make')) {
+                $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
                 continue;
             }
 
-            $enum_exists = $enum_cache[$property_type_name] ?? enum_exists($property_type_name);
-            $enum_cache[$property_type_name] = $enum_exists;
-
-            $this->{$key} = $enum_exists && (is_int($item) || is_string($item))
-                ? $property_type_name::tryFrom($item)
-                : $item;
+            // Built-in Casts
+            switch ($attribute_classname) {
+                case Cast::class:
+                    $this->{$key} = (new $cast_classname)->set((array)$value);
+                    break;
+                case CastToArray::class:
+                    $this->{$key} = array_map(fn($value) => $cast_classname::tryFrom($value), $value);
+                    break;
+            }
         }
     }
 
-
-    /**
-     * Create a new instance and set its attributes.
-     */
     public static function make($items = null): self
     {
         return new self($items);
