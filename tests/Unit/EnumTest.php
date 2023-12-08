@@ -12,6 +12,15 @@ test('casts to string enum', function () {
         ->and($UsesEnum->name)->toBe(MockEnumString::test);
 });
 
+test('handles enum', function () {
+    $UsesEnum = UsesEnum::make([
+        UsesEnum::name => MockEnumString::test
+    ]);
+    expect($UsesEnum->name)->toBeInstanceOf(MockEnumString::class)
+        ->and($UsesEnum->name)->toBe(MockEnumString::test);
+});
+
+
 test('type error when Enum is passed', function () {
     UsesEnum::make([UsesEnum::name => MockEnum::test]);
 })->expectException(TypeError::class);

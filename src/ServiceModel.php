@@ -35,8 +35,8 @@ trait ServiceModel
                     continue;
                 }
 
-                // Enums
-                if (enum_exists($model_classname)) {
+                // Enums: value checking to pass enum directly.
+                if ((is_int($value) || is_string($value)) && enum_exists($model_classname)) {
                     $this->{$key} = $model_classname::tryFrom($value);
                     continue;
                 }
