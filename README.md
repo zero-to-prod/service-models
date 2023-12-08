@@ -17,7 +17,7 @@ This **zero-dependency** package transforms associative arrays into nested, type
 - **`HasOne`/`HasMany`**: Easily define relationships with attributes.
 - **Factory Support**: Use the `factory()` method to make a DTO with default values.
 - **Enum Support**: Cast enums directly, with no extra steps.
-- **Fast**: Designed for speed and performance in mind.
+- **Fast**: Designed with speed and performance in mind.
 
 ## Installation
 
