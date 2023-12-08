@@ -19,15 +19,51 @@ This **zero-dependency** package transforms associative arrays into nested, type
 - **Enum Support**: Cast enums directly, with no extra steps.
 - **Fast**: Designed with [speed](#caching) and performance in mind.
 
-## Installation
+## Getting Started
+
+Install the `service-model` package with composer.
 
 ```bash
 composer require zero-to-prod/service-model
 ```
 
+Use the trait in your model.
+
+Add properties to your model that match the keys of your data.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+
+    public readonly int $id;
+}
+```
+
+Pass an associative array to the `make()` method of your model.
+
+See the [Usage](#usage) section for more information.
+
+```php
+$Order = Order::make(['id' => 1]);
+
+$Order->id; // 1
+```
+
+Use the `factory()` method to make a new model with default values.
+
+See the [Factories](#factories) section for more information.
+
+```php
+$order = Order::factory()->make();
+$order->id; // 1
+```
+
 ## Usage
 
-Create a DTO by passing an associative array to the `make()` method of your model that has the `ServiceModel` trait.
+Create a model by passing an associative array to the `make()` method of your model that has the `ServiceModel` trait.
 
 ```php
 $order = Order::make([
