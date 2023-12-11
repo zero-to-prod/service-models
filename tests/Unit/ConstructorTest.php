@@ -9,3 +9,11 @@ test('passing null', function () {
 test('passing empty array', function () {
     expect(NativeTypes::make([]))->toBeInstanceOf(NativeTypes::class);
 });
+
+test('passing object', function () {
+    expect(NativeTypes::make(new stdClass))->toBeInstanceOf(NativeTypes::class);
+});
+
+test('passing string', function () {
+    expect(NativeTypes::make(''))->toBeInstanceOf(NativeTypes::class);
+});

@@ -8,7 +8,7 @@ trait ServiceModel
 {
     public function __construct(mixed $items = null)
     {
-        if (!$items) {
+        if (!$items || !(is_array($items) || is_object($items))) {
             return;
         }
 
