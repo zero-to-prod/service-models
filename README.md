@@ -6,7 +6,7 @@
 
 [//]: # ([![Total Downloads]&#40;https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41;)
 
-Simple, extensible, typesafe DTOs.
+Simple, extensible, typesafe DTOs with [factory](#factories) support.
 
 This **zero-dependency** package transforms associative arrays into nested, typesafe Data Transfer Objects (DTOs).
 
