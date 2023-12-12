@@ -12,11 +12,11 @@ This **zero-dependency** package transforms associative arrays into nested, type
 
 ## Features
 
-- **Simple**: Use the `ServiceModel` trait to automatically map your data.
-- **Custom Type Casting**: Define your own casters for infinite control.
-- **`HasOne`/`HasMany`**: Easily define relationships with attributes.
-- **Factory Support**: Use the `factory()` method to make a DTO with default values.
-- **Enum Support**: Cast enums directly, with no extra steps.
+- **Simple**: Use the `ServiceModel` [trait](#implementation) to automatically map your data.
+- **Custom Type Casting**: Define your own [casters](#custom-cast-for-hasone-relationships) for infinite control.
+- **`HasOne`/`HasMany`**: Easily define [relationships](#custom-cast-for-hasmany-relationships) with attributes.
+- **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
+- **Enum Support**: Cast [enums](#enum-implementation) directly, with no extra steps.
 - **Fast**: Designed with [speed](#caching) and performance in mind.
 
 ## Getting Started
@@ -419,18 +419,16 @@ $order->status; // Status::completed
 
 ## Caching
 
-The ServiceModel trait in this project uses a caching mechanism to improve performance. The caching is implemented using
+The `ServiceModel` trait in this project uses an in-memory caching mechanism to improve performance. The caching is
+implemented using
 a Singleton pattern, which ensures that only a single instance of the cache is created and used throughout the
 application.
 
 The caching mechanism is used in the constructor of the ServiceModel trait. When an object is constructed,
-the trait checks if a ReflectionClass instance for the current class already exists in the cache. If it doesn't, a new
-ReflectionClass instance is created and stored in the cache.
+the trait checks if a `ReflectionClass` instance for the current class already exists in the cache. If it doesn't, a new
+`ReflectionClass` instance is created and stored in the cache.
 
 The cache is also used when processing the properties of
-the object. For each property, the trait checks if a ReflectionProperty instance and the property type name are already
+the object. For each property, the trait checks if a `ReflectionProperty` instance and the property type name are
+already
 stored in the cache. If they aren't, they are retrieved using reflection and stored in the cache.
-
-The cache is
-implemented using the Cache singleton instance. This instance is used for caching ReflectionClass instances and model
-class names.
