@@ -1,9 +1,10 @@
 {
     "name": "zero-to-prod/service-model",
-    "description": "Simple, extensible, typesafe DTOs.",
+    "description": "Simple, extensible, typesafe DTOs with factory support.",
     "keywords": [
         "service models",
         "dto",
+        "factory",
         "model",
         "models",
         "service-model",
