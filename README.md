@@ -16,7 +16,7 @@ This **zero-dependency** package transforms associative arrays into nested, type
 - **Custom Type Casting**: Define your own [casters](#custom-cast-for-hasone-relationships) for infinite control.
 - **`HasOne`/`HasMany`**: Easily define [relationships](#custom-cast-for-hasmany-relationships) with attributes.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
-- **Enum Support**: Cast [enums](#enum-implementation) directly, with no extra steps.
+- **Native Object Support**: [Native object support](#native-object-support) for Enums and Classes, with no extra steps.
 - **Fast**: Designed with [speed](#caching) and performance in mind.
 
 ## Getting Started
@@ -215,7 +215,14 @@ $order->details->id; // 1
 $order->details->name; // 'Order 1'
 ```
 
-## Enum Implementation
+## Native Object Support
+
+This package provides native support for the following objects:
+
+- [Enums](#enums)
+- [Classes](#classes)
+
+### Enums
 
 Use a value backed enum to automatically cast the value.
 
@@ -243,14 +250,15 @@ enum Status: string
     case pending = 'pending';
     case completed = 'completed';
 }
+```
 
+```php
 enum Tag: string
 {
     case important = 'important';
     case rush = 'rush';
 }
 ````
-
 ```php
 $order = Order::make([
     'status' => 'pending',
@@ -262,6 +270,101 @@ $order->status->value; // 'pending'
 
 $order->tags[0]; // Tag::important
 $order->tags[0]->value; // 'important'
+```
+
+### Classes
+
+Sometimes you may want to cast to a class you cannot use the `ServiceModel` trait in.
+
+For a one-to-one cast, simply typehint with the property with the class.
+This will automatically unpack the array into the constructor of the class.
+
+For a one-to-many cast, use the `CastToArray` attribute to cast an array of classes.
+
+#### One-to-one
+
+Simply typehint with the property with the class you want to cast to.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+    
+    public readonly PickupInfo $pickups;
+}
+```
+
+```php
+class PickupInfo
+{
+    public function __construct(public readonly string $location, public readonly string $time)
+    {
+    }
+}
+```
+
+```php
+$order = Order::make([
+    'pickups' => [
+        'location' => 'Location 1',
+        'time' => '2021-01-01 00:00:00',
+    ]
+]);
+
+$order->pickups->location; // Location 1
+$order->pickups->time; // 2021-01-01 00:00:00
+```
+
+#### One-to-many
+
+Sometimes you may want to cast an array of classes you cannot use the `ServiceModel` trait.
+
+Use the `CastToClasses` attribute to cast an array of classes.
+
+```php
+use Zerotoprod\ServiceModel\CastToClasses;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+    
+    /**
+     * Casts to an array of PickupInfo.
+     * @var PickupInfo[] $pickups
+     */
+    #[CastToClasses(PickupInfo::class)]
+    public readonly array $pickups;
+}
+```
+
+```php
+class PickupInfo
+{
+    public function __construct(public readonly string $location, public readonly string $time)
+    {
+    }
+}
+```
+
+```php
+$order = Order::make([
+    'pickups' => [
+        [
+            'location' => 'Location 1',
+            'time' => '2021-01-01 00:00:00',
+        ],
+        [
+            'location' => 'Location 2',
+            'time' => '2021-01-01 00:00:00',
+        ],
+    ],
+]);
+
+$order->pickups[0]->location; // Location 1
+$order->pickups[0]->time; // 2021-01-01 00:00:00
 ```
 
 ## Custom Cast for `HasOne` Relationships
@@ -340,7 +443,6 @@ class CastToCollection implements CanCast
     }
 }
 ```
-
 ```php
 $order = Order::make([
     'views' => [
@@ -383,7 +485,6 @@ class Order
     public Status $status;
 }
 ```
-
 ```php
 use Zerotoprod\ServiceModel\Factory;
 
@@ -407,7 +508,6 @@ class OrderFactory extends Factory
     }
 }
 ```
-
 ```php
 $order = Order::factory()->make();
 $order->status; // Status::pending
