@@ -2,6 +2,7 @@
 
 namespace Zerotoprod\ServiceModel;
 
+use DateTime;
 use ReflectionClass;
 
 trait ServiceModel
@@ -28,6 +29,7 @@ trait ServiceModel
             $cache_key = static::class . '::' . $key;
 
             if (!$Cache->get($cache_key)) {
+
                 $Cache->set($cache_key, $ReflectionClass->getProperty($key));
             }
 
@@ -52,6 +54,12 @@ trait ServiceModel
                 if ((is_int($value) || is_string($value)) && enum_exists($model_classname)) {
                     $this->{$key} = $model_classname::tryFrom($value);
                     continue;
+                }
+
+                switch ($model_classname) {
+                    case DateTime::class:
+                        $this->{$key} = new DateTime($value);
+                        continue 2;
                 }
 
                 // Native types
