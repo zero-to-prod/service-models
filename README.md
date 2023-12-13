@@ -69,6 +69,10 @@ Create a model by passing an associative array to the `make()` method of your mo
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
     'status' => 'pending',
+    'pickups' => [
+        'location' => 'Location 1',
+        'time' => '2021-01-01 00:00:00',
+    ]
     'tags' => ['important', 'rush'],
     'ordered_at' => '2021-01-01 00:00:00',
     'items' => [
@@ -86,6 +90,9 @@ Access your data with the arrow syntax.
 
 ```php
 $details = $order->details->name; // 'Order 1'
+$status = $order->status; // Status::pending
+$location = $order->pickups->location; // 'Location 1'
+$tags = $order->tags[0]; // Tag::important
 $ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 $item_id = $order->items[0]->id; // 1
 $view_name = $order->views->first()->name; // 'View 1'
@@ -111,6 +118,7 @@ Use the `ServiceModel` trait to automatically map and cast your data to properti
 use Zerotoprod\ServiceModel\ServiceModel;
 use Zerotoprod\ServiceModel\Cast;
 use Zerotoprod\ServiceModel\CastToArray;
+use Zerotoprod\ServiceModel\CastToClasses;
 
 class Order
 {
@@ -128,6 +136,18 @@ class Order
     public Status $status;
     
     /**
+     * Unpacks the array into the constructor of the type-hinted class.
+     */
+    public readonly PickupInfo $pickups;
+    
+    /**
+     * Casts to an array of PickupInfo.
+     * @var PickupInfo[] $pickups
+     */
+    #[CastToClasses(PickupInfo::class)]
+    public readonly array $pickups;
+    
+    /**
      * Casts to an array of enums.
      * @var Tag[] $tags
      */
@@ -136,7 +156,7 @@ class Order
 
     /**
      * Custom cast for a hasOne relationship.
-     * @var Item[] $items
+     * @var Carbon $ordered_at
      */
     #[Cast(ToCarbon::class)]
     public Carbon $ordered_at;
@@ -202,7 +222,7 @@ $order = Order::make([
     ],
 ]);
 
-// this is also equivalent
+// This is also equivalent.
 
 $order = Order::make([
     'details' => OrderDetail::make([
@@ -243,7 +263,6 @@ class Order
     public array $tags;
 }
 ```
-
 ```php
 enum Status: string
 {
@@ -251,7 +270,6 @@ enum Status: string
     case completed = 'completed';
 }
 ```
-
 ```php
 enum Tag: string
 {
@@ -292,10 +310,12 @@ class Order
 {
     use ServiceModel;
     
+    /**
+     * Unpacks the array into the constructor of the type-hinted class.
+     */
     public readonly PickupInfo $pickups;
 }
 ```
-
 ```php
 class PickupInfo
 {
@@ -304,7 +324,6 @@ class PickupInfo
     }
 }
 ```
-
 ```php
 $order = Order::make([
     'pickups' => [
@@ -339,7 +358,6 @@ class Order
     public readonly array $pickups;
 }
 ```
-
 ```php
 class PickupInfo
 {
@@ -348,7 +366,6 @@ class PickupInfo
     }
 }
 ```
-
 ```php
 $order = Order::make([
     'pickups' => [
@@ -385,7 +402,6 @@ class Order
     #[Cast(ToCarbon::class)]
     public Carbon $ordered_at;
 ```
-
 ```php
 use Zerotoprod\ServiceModel\CanCast;
 
@@ -397,7 +413,6 @@ class ToCarbon implements CanCast
     }
 }
 ```
-
 ```php
 $order = Order::make([
     'ordered_at' => '2021-01-01 00:00:00',
