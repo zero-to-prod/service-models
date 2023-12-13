@@ -2,7 +2,6 @@
 
 namespace Zerotoprod\ServiceModel;
 
-use DateTime;
 use ReflectionClass;
 
 trait ServiceModel
@@ -50,16 +49,26 @@ trait ServiceModel
                     continue;
                 }
 
-                // Enums: value checking to pass enum directly.
-                if ((is_int($value) || is_string($value)) && enum_exists($model_classname)) {
+                // Enums: pass enum directly.
+                if (isset($value->value)) {
+                    $this->{$key} = $model_classname::tryFrom($value->value);
+                    continue;
+                }
+
+                // Enums: try from value.
+                if (enum_exists($model_classname)) {
                     $this->{$key} = $model_classname::tryFrom($value);
                     continue;
                 }
 
-                switch ($model_classname) {
-                    case DateTime::class:
-                        $this->{$key} = new DateTime($value);
-                        continue 2;
+                if (class_exists($model_classname)) {
+                    if (is_array($value)) {
+                        $this->{$key} = new $model_classname(...$value);
+                        continue;
+                    }
+
+                    $this->{$key} = new $model_classname($value);
+                    continue;
                 }
 
                 // Native types
@@ -83,6 +92,9 @@ trait ServiceModel
                     break;
                 case CastToArray::class:
                     $this->{$key} = array_map(fn($value) => $cast_classname::tryFrom($value), $value);
+                    break;
+                case CastToClasses::class:
+                    $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
                     break;
             }
         }
