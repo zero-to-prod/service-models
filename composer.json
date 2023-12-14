@@ -1,6 +1,6 @@
 {
     "name": "zero-to-prod/service-model",
-    "description": "Simple, extensible, typesafe DTOs with factory support.",
+    "description": "A modern approach to extensible, typesafe DTOs with factory support.",
     "keywords": [
         "service models",
         "dto",
