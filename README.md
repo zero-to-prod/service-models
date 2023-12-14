@@ -63,7 +63,7 @@ $order->id; // 1
 
 ## Usage
 
-Create a [model](#setting-up-your-model) by passing an associative array to the `make()` method of
+Create a [model](#setting-up-your-model) instance by passing an associative array to the `make()` method of
 your [model](#setting-up-your-model) that has the `ServiceModel` trait.
 
 ```php
@@ -91,19 +91,25 @@ Access your data with the arrow syntax.
 
 ```php
 $details = $order->details->name; // 'Order 1'
+
 $status = $order->status; // Status::pending
+
 $location = $order->pickups->location; // 'Location 1'
+
 $tags = $order->tags[0]; // Tag::important
+
 $ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
+
 $item_id = $order->items[0]->id; // 1
+
 $view_name = $order->views->first()->name; // 'View 1'
 ```
 
 ## Factory Support
 
-Use the `factory()` method to make a new DTO with default values.
+Use the `factory()` method to make a new model instance with default values.
 
-See the [Factories](#factories) section for more information.
+See the [Factories](#factories) section for how to set up and use factories.
 
 ```php
 $order = Order::factory()->make();
@@ -233,7 +239,7 @@ class Order
      * @var Collection<int, View> $views
      */
     #[CastToCollection(View::class)]
-    public array $views;
+    public Collection $views;
 }
 ```
 
