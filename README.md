@@ -5,7 +5,8 @@
 ![test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
 
-A modern approach to extensible, typesafe DTOs with [factory](#factories) support.
+A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
+with [factory](#factories) support.
 
 This **zero-dependency** package transforms associative arrays into nested, typesafe Data
 Transfer [Objects](#setting-up-your-model) (DTOs).
@@ -542,6 +543,44 @@ $order->details->name; // 'Order 1'
 
 $order = Order::factory()->setStatus(Status::completed)->make();
 $order->status; // Status::completed
+```
+
+## Extending the `ServiceModel` Trait
+
+You can extend the `ServiceModel` trait and add your own functionality to your models.
+
+```php
+<?php
+
+namespace App\Channels\Amazon\ServiceModels\Support;
+
+use Illuminate\Support\Collection;
+
+trait ServiceModel
+{
+    use \Zerotoprod\ServiceModel\ServiceModel;
+
+    public function toArray(): array
+    {
+        return $this->collect()->toArray();
+    }
+
+    public function toJson(): string
+    {
+        return $this->collect()->toJson();
+    }
+
+    public function collect(): Collection
+    {
+        return collect($this);
+    }
+}
+```
+
+This allows you to access custom methods on the model.
+
+```php
+Order::make([...])->toJson();
 ```
 
 ## Caching
