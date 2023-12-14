@@ -87,21 +87,27 @@ Access your data with the arrow syntax.
 
 ```php
 // Nested Models
+$details = $order->details; // Order::class
 $details = $order->details->name; // 'Order 1'
 
 // Enums
 $status = $order->status; // Status::pending
+$status = $order->status->value; // 'pending'
 
 // Nested Enums
 $tags = $order->tags[0]; // Tag::important
+$tags = $order->tags[0]->value; // 'important'
 
 // Value Casting
+$ordered_at = $order->ordered_at; // Carbon::class
 $ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 
 // One-to-many array Casting
+$item_id = $order->items[0]; // Item::class
 $item_id = $order->items[0]->id; // 1
 
 // One-to-many custom Casting
+$view_name = $order->views->first(); // View::class
 $view_name = $order->views->first()->name; // 'View 1'
 ```
 
@@ -131,8 +137,8 @@ class Order
     use ServiceModel;
 
     /**
-     * Using the `ServiceModel` trait in OrderDetails
-     * class will automatically map the data.
+     * Using the `ServiceModel` trait in the child class (OrderDetails)
+     * class will automatically instantiate new class.
      */
     public OrderDetails $details;
 }
@@ -340,6 +346,7 @@ $order = Order::make([
     ]
 ]);
 
+$order->pickups; // PickupInfo::class
 $order->pickups->location; // Location 1
 $order->pickups->time; // 2021-01-01 00:00:00
 ```
@@ -429,6 +436,7 @@ $order = Order::make([
     'ordered_at' => '2021-01-01 00:00:00',
 ]);
 
+$order->ordered_at; // Carbon::class
 $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 ```
 
@@ -489,6 +497,7 @@ $order = Order::make([
     ],
 ]);
 
+$order->views->first(); // View::class
 $order->views->first()->name; // 'View 1'
 ```
 
@@ -592,15 +601,13 @@ Order::make([...])->toJson();
 ## Caching
 
 The `ServiceModel` trait in this project uses an in-memory caching mechanism to improve performance. The caching is
-implemented using
-a Singleton pattern, which ensures that only a single instance of the cache is created and used throughout the
-application.
+implemented using a Singleton pattern, which ensures that only a single instance of the cache is created and used
+throughout the application.
 
-The caching mechanism is used in the constructor of the ServiceModel trait. When an object is constructed,
-the trait checks if a `ReflectionClass` instance for the current class already exists in the cache. If it doesn't, a new
-`ReflectionClass` instance is created and stored in the cache.
+The caching mechanism is used in the constructor of the ServiceModel trait. When an object is constructed, the trait
+checks if a `ReflectionClass` instance for the current class already exists in the cache. If it doesn't, a
+new `ReflectionClass` instance is created and stored in the cache.
 
-The cache is also used when processing the properties of
-the object. For each property, the trait checks if a `ReflectionProperty` instance and the property type name are
-already
-stored in the cache. If they aren't, they are retrieved using reflection and stored in the cache.
+The cache is also used when processing the properties of the object. For each property, the trait checks if
+a `ReflectionProperty` instance and the property type name are already stored in the cache. If they aren't, they are
+retrieved using reflection and stored in the cache.
