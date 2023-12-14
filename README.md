@@ -14,12 +14,12 @@ Transfer [Objects](#setting-up-your-model) (DTOs).
 ## Features
 
 - **Simple**: Use the `ServiceModel` [trait](#basic-implementation) to automatically map your data.
-- **Custom Type Casting**: Define your own [casters](#value-casting) for infinite control.
+- **Custom Type Casting**: Define your own value [casters](#value-casting) for infinite control.
 - **`One-to-many`**: Easily define [one-to-many](#one-to-many-casting) relationships with attributes.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
-- **Fast**: Designed with [speed](#caching) and performance in mind.
+- **Fast**: Designed with [performance](#caching) in mind.
 
 ## Getting Started
 
@@ -70,10 +70,6 @@ your [model](#setting-up-your-model) that has the `ServiceModel` trait.
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
     'status' => 'pending',
-    'pickups' => [
-        'location' => 'Location 1',
-        'time' => '2021-01-01 00:00:00',
-    ]
     'tags' => ['important', 'rush'],
     'ordered_at' => '2021-01-01 00:00:00',
     'items' => [
@@ -90,18 +86,22 @@ $order = Order::make([
 Access your data with the arrow syntax.
 
 ```php
+// Nested Models
 $details = $order->details->name; // 'Order 1'
 
+// Enums
 $status = $order->status; // Status::pending
 
-$location = $order->pickups->location; // 'Location 1'
-
+// Nested Enums
 $tags = $order->tags[0]; // Tag::important
 
+// Value Casting
 $ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 
+// One-to-many array Casting
 $item_id = $order->items[0]->id; // 1
 
+// One-to-many custom Casting
 $view_name = $order->views->first()->name; // 'View 1'
 ```
 
