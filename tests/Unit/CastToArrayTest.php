@@ -29,15 +29,17 @@ test('top level cast with service model', function () {
         ->and($TopLevelCastArray->children[0]->name)->toBe('name')
         ->and($TopLevelCastArray->children[0])->toBeInstanceOf(Child::class);
 });
-test('top level cast to enums', function () {
+test('top level cast to enums values', function () {
     $TopLevelCastArrayEnums = TopLevelCastArrayEnums::make([
         TopLevelCastArrayEnums::children => [
             MockEnumCast::first->value,
-            MockEnumCast::second->value,
+            MockEnumCast::second,
         ]
     ]);
 
     expect($TopLevelCastArrayEnums->children)->toBeArray()
         ->and($TopLevelCastArrayEnums->children[0]->name)->toBe('first')
-        ->and($TopLevelCastArrayEnums->children[0])->toBeInstanceOf(MockEnumCast::class);
+        ->and($TopLevelCastArrayEnums->children[0])->toBeInstanceOf(MockEnumCast::class)
+        ->and($TopLevelCastArrayEnums->children[1]->name)->toBe('second')
+        ->and($TopLevelCastArrayEnums->children[1])->toBeInstanceOf(MockEnumCast::class);
 });
