@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedFunctionInspection */
 
 namespace Zerotoprod\ServiceModel;
 
@@ -13,12 +13,7 @@ trait ServiceModel
         }
 
         $Cache = Cache::getInstance();
-
-        if (!$Cache->get(static::class)) {
-            $Cache->set(static::class, new ReflectionClass($this));
-        }
-
-        $ReflectionClass = $Cache->get(static::class);
+        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($this));
 
         foreach ($items as $key => $value) {
             if (!$ReflectionClass->hasProperty($key)) {
@@ -26,25 +21,17 @@ trait ServiceModel
             }
 
             $cache_key = static::class . '::' . $key;
-
-            if (!$Cache->get($cache_key)) {
-
-                $Cache->set($cache_key, $ReflectionClass->getProperty($key));
-            }
-
-            $ReflectionProperty = $Cache->get($cache_key);
-
-            if (!$Cache->get($cache_key . '::type')) {
-                $Cache->set($cache_key . '::type', $ReflectionProperty->getType()?->getName() ?? 'string');
-            }
-
-            $model_classname = $Cache->get($cache_key . '::type');
+            $ReflectionProperty = $Cache->remember($cache_key, fn() => $ReflectionClass->getProperty($key));
+            $model_classname = $Cache->remember($cache_key . '::type',
+                fn() => $ReflectionProperty->getType()?->getName() ?? 'string'
+            );
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
-
 
             if (!$ReflectionAttribute) {
                 // One-to-One Cast
-                if (method_exists($model_classname, 'make')) {
+                if ($Cache->remember($model_classname . '::method_exists',
+                    fn() => method_exists($model_classname, 'make'))
+                ) {
                     $this->{$key} = $model_classname::make($value);
                     continue;
                 }
@@ -55,18 +42,24 @@ trait ServiceModel
                     continue;
                 }
 
-                // Enums: try from value.
-                if (enum_exists($model_classname)) {
+                // Enums: tryFrom() value.
+                if ($value !== null && $Cache->remember($model_classname . '::enum_exists',
+                        fn() => enum_exists($model_classname))
+                ) {
                     $this->{$key} = $model_classname::tryFrom($value);
                     continue;
                 }
 
-                if (class_exists($model_classname)) {
+                // Plain classes
+                if ($Cache->remember($model_classname . '::class_exists',
+                    fn() => class_exists($model_classname))
+                ) {
+                    // One-to-many plain class
                     if (is_array($value)) {
                         $this->{$key} = new $model_classname(...$value);
                         continue;
                     }
-
+                    // One-to-one plain class
                     $this->{$key} = new $model_classname($value);
                     continue;
                 }
@@ -80,7 +73,9 @@ trait ServiceModel
             $attribute_classname = $ReflectionAttribute->getName();
 
             // One-to-many custom cast
-            if (method_exists($cast_classname, 'make')) {
+            if ($Cache->remember($cast_classname . '::make',
+                fn() => method_exists($cast_classname, 'make'))
+            ) {
                 $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
                 continue;
             }

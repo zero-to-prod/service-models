@@ -24,4 +24,13 @@ class Cache
     {
         return $this->cache[$key] ?? null;
     }
+
+    public function remember(string $key, callable $callable)
+    {
+        if (!isset($this->cache[$key])) {
+            $this->cache[$key] = $callable();
+        }
+
+        return $this->cache[$key];
+    }
 }
