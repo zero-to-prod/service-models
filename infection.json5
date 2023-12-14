@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/infection/infection/0.27.9/resources/schema.json",
+  "source": {
+    "directories": [
+      "src"
+    ]
+  },
+  "logs": {
+    "html": "infection.html"
+  },
+  "mutators": {
+    "@default": true,
+    "ProtectedVisibility": {
+      "ignore": [
+        "Zerotoprod\\ServiceModel\\Factory::definition"
+      ]
+    }
+  },
+  "testFramework": "pest"
+}
