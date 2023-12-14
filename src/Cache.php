@@ -8,11 +8,7 @@ class Cache
 
     public static function getInstance(): Cache
     {
-        if (self::$instance === null) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
+        return self::$instance ?? (self::$instance = new self);
     }
 
     public function set(string $key, mixed $value): void
@@ -27,10 +23,6 @@ class Cache
 
     public function remember(string $key, callable $callable)
     {
-        if (!isset($this->cache[$key])) {
-            $this->cache[$key] = $callable();
-        }
-
-        return $this->cache[$key];
+        return $this->cache[$key] ?? ($this->cache[$key] = $callable());
     }
 }
