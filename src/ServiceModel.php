@@ -43,8 +43,8 @@ trait ServiceModel
                 }
 
                 // Enums: tryFrom() value.
-                if ($Cache->remember($model_classname . '::enum_exists',
-                    fn() => enum_exists($model_classname))
+                if ($value !== null && $Cache->remember($model_classname . '::enum_exists',
+                        fn() => enum_exists($model_classname))
                 ) {
                     $this->{$key} = $model_classname::tryFrom($value);
                     continue;
