@@ -80,7 +80,10 @@ trait ServiceModel
                     $this->{$key} = (new $cast_classname)->set((array)$value);
                     break;
                 case CastToArray::class:
-                    $this->{$key} = array_map(fn($value) => $cast_classname::tryFrom($value), $value);
+                    $this->{$key} = array_map(
+                        fn($value) => isset($value->value) ? $value : $cast_classname::tryFrom($value),
+                        $value
+                    );
                     break;
                 case CastToClasses::class:
                     $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
