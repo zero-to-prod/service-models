@@ -92,3 +92,4 @@ fabric.properties
 /.idea/symfony2.xml
 /.idea/vcs.xml
 /composer.lock
+/infection.html
