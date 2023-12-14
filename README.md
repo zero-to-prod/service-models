@@ -14,8 +14,8 @@ Transfer [Objects](#setting-up-your-model) (DTOs).
 ## Features
 
 - **Simple**: Use the `ServiceModel` [trait](#basic-implementation) to automatically map your data.
-- **Custom Type Casting**: Define your own [casters](#custom-cast-for-one-to-one-cardinality) for infinite control.
-- **`One-to-one`/`One-to-many`**: Easily define [cardinality](#custom-cast-for-one-to-many-cardinality) with attributes.
+- **Custom Type Casting**: Define your own [casters](#value-casting) for infinite control.
+- **`One-to-many`**: Easily define [one-to-many](#one-to-many-casting) relationships with attributes.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
@@ -300,12 +300,12 @@ $order->statuses[1]->value; // completed
 
 Sometimes you may want to cast to a class you cannot use the `ServiceModel` trait in.
 
-For a `one-to-one` cast, simply typehint with the property with the class.
+For a simple cast, simply typehint with the property with the class.
 This will automatically unpack the array into the constructor of the class.
 
 For a `one-to-many` cast, use the `CastToArray` attribute to cast an array of classes.
 
-#### One-to-one
+#### Simple Class Casting
 
 Simply typehint with the property with the class you want to cast to.
 
@@ -344,9 +344,9 @@ $order->pickups->location; // Location 1
 $order->pickups->time; // 2021-01-01 00:00:00
 ```
 
-#### One-to-many
+#### One-to-many Class Casting
 
-Sometimes you may want to cast an array of classes you cannot use the `ServiceModel` trait.
+Sometimes you may want to cast an array of classes you cannot use the `ServiceModel` trait in.
 
 Use the `CastToClasses` attribute to cast an array of classes.
 
@@ -394,7 +394,7 @@ $order->pickups[0]->location; // Location 1
 $order->pickups[0]->time; // 2021-01-01 00:00:00
 ```
 
-## Custom Cast for `One-to-one` Cardinality
+## Value Casting
 
 Implement the `CanCast` interface to make a custom type.
 
@@ -432,7 +432,7 @@ $order = Order::make([
 $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
 ```
 
-## Custom Cast for `One-to-many` Cardinality
+## `One-to-many` Casting
 
 Use the `CastToArray` attribute to cast an array of classes.
 
