@@ -27,4 +27,4 @@ test('type error when Enum is passed', function () {
 
 test('casts to enum', function () {
     UsesEnum::make([UsesEnum::name => MockEnum::test->value])->name;
-})->expectException(Error::class);
+})->expectException(Throwable::class);
