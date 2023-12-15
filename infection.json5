@@ -7,8 +7,10 @@
   },
   "logs": {
     "html": "infection.html",
+    "summaryJson": "infection.json",
+    "github": true,
     "stryker": {
-      "badge": "/^release-.*$/"
+      "badge": "main"
     }
   },
   "mutators": {
