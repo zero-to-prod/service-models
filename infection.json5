@@ -7,6 +7,7 @@
   },
   "logs": {
     "html": "infection.html",
+    "json": "infection.json",
     "stryker": {
       "badge": "/^release-.*$/"
     }
