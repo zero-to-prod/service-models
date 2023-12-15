@@ -47,6 +47,8 @@ jobs:
         chmod +x infection.phar
 
     - name: Run Infection
-      run: ./infection.phar --min-msi=100 --threads=4
+      run: |
+        ./infection.phar --min-msi=100 --threads=4
+        echo ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
       env:
         STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
