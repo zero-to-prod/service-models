@@ -2,6 +2,7 @@
 
 use Zerotoprod\AppServiceModel\Tests\Models\Child;
 use Zerotoprod\AppServiceModel\Tests\Models\ChildWithoutTrait;
+use Zerotoprod\AppServiceModel\Tests\Models\EmptyClass;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevel;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevelCast;
 use Zerotoprod\AppServiceModel\Tests\Models\ValueCast;
@@ -13,6 +14,13 @@ test('top level value cast', function () {
     ]);
     expect($ValueCast->value)->toBeInt()
         ->and($ValueCast->value)->toBe(4);
+});
+test('empty class', function () {
+    $EmptyClass = EmptyClass::make([
+        'test' => 'value'
+    ]);
+    expect($EmptyClass)->toBeInstanceOf(EmptyClass::class)
+        ->and(isset($EmptyClass->test))->toBeFalse();
 });
 test('top level cast', function () {
     $TopLevelCast = TopLevelCast::make([
