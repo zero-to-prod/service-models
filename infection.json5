@@ -7,7 +7,8 @@
   },
   "logs": {
     "html": "infection.html",
-    "json": "infection.json",
+    "summaryJson": "infection.json",
+    "github": true,
     "stryker": {
       "badge": "/^release-.*$/"
     }
