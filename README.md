@@ -4,6 +4,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg)](https://packagist.org/packages/zero-to-prod/service-model)
 ![test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fzero-to-prod%2Fservice-model%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/zero-to-prod/service-model/master)
 
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
 with [factory](#factories) support.
