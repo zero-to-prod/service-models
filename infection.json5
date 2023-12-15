@@ -6,7 +6,10 @@
     ]
   },
   "logs": {
-    "html": "infection.html"
+    "html": "infection.html",
+    "stryker": {
+      "badge": "/^release-.*$/"
+    }
   },
   "mutators": {
     "@default": true,
