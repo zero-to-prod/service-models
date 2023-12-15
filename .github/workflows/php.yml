@@ -50,7 +50,7 @@ jobs:
       run: |
         ./infection.phar --min-msi=100 --threads=4
         curl -X PUT \
-          ${{ secrets.BASE_URL }}/api/reports/${{ secrets.PROJECT }}/${{ secrets.VERSION }} \
+          https://dashboard.stryker-mutator.io/api/reports/zero-to-prod/main \
           -H 'Content-Type: application/json' \
           -H 'Host: dashboard.stryker-mutator.io' \
           -H 'X-Api-Key: ${{ secrets.INFECTION_DASHBOARD_API_KEY }}' \
