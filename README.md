@@ -417,7 +417,7 @@ class Order
 ```
 
 ```php
-use Zerotoprod\ServiceModel\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanCast;
 
 class ToCarbon implements CanCast
 {
@@ -464,7 +464,7 @@ class Order
 > IMPORTANT: Don't forget to add `#[Attribute]` to the top of your class.
 
 ```php
-use Zerotoprod\ServiceModel\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanCast;
 
 #[Attribute]
 class CastToCollection implements CanCast

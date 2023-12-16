@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
-use Zerotoprod\ServiceModel\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanCast;
 
 #[Attribute]
 class CastToArray implements CanCast

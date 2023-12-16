@@ -1,6 +1,6 @@
 <?php
 
-namespace Zerotoprod\ServiceModel;
+namespace Zerotoprod\ServiceModel\Contracts;
 
 interface CanCast
 {

@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Casters;
 
-use Zerotoprod\ServiceModel\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanCast;
 
 class AddOne implements CanCast
 {
