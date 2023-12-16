@@ -79,13 +79,13 @@ trait ServiceModel
             if ($Cache->remember($cast_classname . '::cast',
                 fn() => method_exists($cast_classname, 'make'))
             ) {
-                $self->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
+                $self->{$key} = (new $attribute_classname($cast_classname))->parse((array)$value);
                 continue;
             }
 
             switch ($attribute_classname) {
                 case Cast::class:
-                    $self->{$key} = (new $cast_classname)->set((array)$value);
+                    $self->{$key} = (new $cast_classname)->parse((array)$value);
                     break;
                 case CastToArray::class:
                     $self->{$key} = array_map(
@@ -94,7 +94,7 @@ trait ServiceModel
                     );
                     break;
                 case CastToClasses::class:
-                    $self->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
+                    $self->{$key} = (new $attribute_classname($cast_classname))->parse((array)$value);
                     break;
             }
         }

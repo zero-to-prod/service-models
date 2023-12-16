@@ -417,9 +417,9 @@ class Order
 ```
 
 ```php
-use Zerotoprod\ServiceModel\Contracts\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
 
-class ToCarbon implements CanCast
+class ToCarbon implements CanParse
 {
     public function set(array $value): Carbon
     {
@@ -464,10 +464,10 @@ class Order
 > IMPORTANT: Don't forget to add `#[Attribute]` to the top of your class.
 
 ```php
-use Zerotoprod\ServiceModel\Contracts\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class CastToCollection implements CanCast
+class CastToCollection implements CanParse
 {
     public function __construct(public readonly string $class)
     {
