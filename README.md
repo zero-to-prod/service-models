@@ -4,7 +4,6 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg)](https://packagist.org/packages/zero-to-prod/service-model)
 ![test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fzero-to-prod%2Fservice-model%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/zero-to-prod/service-model/master)
 
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
 with [factory](#factories) support.
@@ -421,7 +420,7 @@ use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 class ToCarbon implements CanParse
 {
-    public function set(array $value): Carbon
+    public function parse(array $value): Carbon
     {
         return Carbon::parse($value[0]);
     }
@@ -473,7 +472,7 @@ class CastToCollection implements CanParse
     {
     }
 
-    public function set(array $value): Collection
+    public function parse(array $value): Collection
     {
         return collect($value)->map(fn(array $item) => $this->class::make($item));
     }
@@ -608,3 +607,131 @@ new `ReflectionClass` instance is created and stored in the cache.
 The cache is also used when processing the properties of the object. For each property, the trait checks if
 a `ReflectionProperty` instance and the property type name are already stored in the cache. If they aren't, they are
 retrieved using reflection and stored in the cache.
+
+## Upgrading to v2.0.0
+
+This guide will help you upgrade your existing codebase to use the new features and improvements in the latest version
+of the Service Models package
+
+1. **Update the Package**
+
+```shell
+composer update zero-to-prod/service-model
+```
+
+2. **Update Attribute Namespaces**
+
+The namespaces for the attributes have changed. Update your import statements to reflect these changes:
+
+> IMPORTANT: The namespace for attributes have moved from `Zerotoprod\ServiceModel`
+> to `Zerotoprod\ServiceModel\Attributes`.
+
+**Before:**
+
+```php
+use Zerotoprod\ServiceModel\Cast;
+use Zerotoprod\ServiceModel\CastToArray;
+use Zerotoprod\ServiceModel\CastToClasses;
+use Zerotoprod\ServiceModel\CanCast;
+```
+
+**After:**
+
+```php
+use Zerotoprod\ServiceModel\Attributes\Cast;
+use Zerotoprod\ServiceModel\Attributes\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\CastToClasses;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+```
+
+3. **Update Caster Interface**
+
+The `CanCast` interface has been replaced with `CanParse`. Update your classes that implement this interface:
+
+> IMPORTANT: The `CanCast` interface has been replaced with `CanParse`.
+**Before:**
+
+```php
+use Zerotoprod\ServiceModel\CanCast;
+```
+
+**After:**
+
+```php
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+```
+
+4. **Update Caster Method Names**
+
+The method names in classes implementing the caster interface have changed from `set` to `parse`. Update these methods
+in your classes:
+
+> IMPORTANT: The `set` method has been replaced with `parse`.
+
+**Before:**
+
+```php
+use Zerotoprod\ServiceModel\CanCast;
+
+class ToCarbon implements CanCast
+{
+    public function set(array $value): Carbon
+    {
+        return Carbon::parse($value[0]);
+    }
+}
+```
+
+**After:**
+
+```php
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+
+class ToCarbon implements CanParse
+{
+    public function parse(array $value): Carbon
+    {
+        return Carbon::parse($value[0]);
+    }
+}
+```
+
+**Before:**
+
+```php
+use Zerotoprod\ServiceModel\CanCast;
+
+#[Attribute]
+class CastToCollection implements CanCast
+{
+    public function __construct(public readonly string $class)
+    {
+    }
+
+    public function set(array $value): Collection
+    {
+        return collect($value)->map(fn(array $item) => $this->class::make($item));
+    }
+}
+```
+
+**After:**
+
+```php
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+
+#[Attribute]
+class CastToCollection implements CanParse
+{
+    public function __construct(public readonly string $class)
+    {
+    }
+
+    public function parse(array $value): Collection
+    {
+        return collect($value)->map(fn(array $item) => $this->class::make($item));
+    }
+}
+```
+
+Please test your application thoroughly after making these changes to ensure everything works as expected.
