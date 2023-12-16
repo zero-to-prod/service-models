@@ -6,17 +6,20 @@ use ReflectionClass;
 use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastToArray;
 use Zerotoprod\ServiceModel\Attributes\CastToClasses;
+use Zerotoprod\ServiceModel\Cache\Cache;
 
 trait ServiceModel
 {
-    public function __construct(mixed $items = null)
+    public static function make($items = null): self
     {
+        $self = new self;
+
         if (!$items || !(is_array($items) || is_object($items))) {
-            return;
+            return $self;
         }
 
         $Cache = Cache::getInstance();
-        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($this));
+        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
 
         foreach ($items as $key => $value) {
             if (!$ReflectionClass->hasProperty($key)) {
@@ -31,17 +34,18 @@ trait ServiceModel
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
 
             if (!$ReflectionAttribute) {
+
                 // ServiceModels
                 if ($Cache->remember($model_classname . '::make',
                     fn() => method_exists($model_classname, 'make'))
                 ) {
-                    $this->{$key} = $model_classname::make($value);
+                    $self->{$key} = $model_classname::make($value);
                     continue;
                 }
 
                 // Enums
                 if (isset($value->value)) {
-                    $this->{$key} = $model_classname::tryFrom($value->value);
+                    $self->{$key} = $model_classname::tryFrom($value->value);
                     continue;
                 }
 
@@ -49,7 +53,7 @@ trait ServiceModel
                 if ($Cache->remember($model_classname . '::enum',
                     fn() => enum_exists($model_classname))
                 ) {
-                    $this->{$key} = $model_classname::tryFrom($value);
+                    $self->{$key} = $model_classname::tryFrom($value);
                     continue;
                 }
 
@@ -57,13 +61,14 @@ trait ServiceModel
                 if ($Cache->remember($model_classname . '::class',
                     fn() => class_exists($model_classname))
                 ) {
-                    $this->{$key} = is_array($value)
+                    $self->{$key} = is_array($value)
                         ? new $model_classname(...$value)
                         : new $model_classname($value);
                     continue;
                 }
 
-                $this->{$key} = $value;
+                $self->{$key} = $value;
+
                 continue;
             }
 
@@ -74,29 +79,26 @@ trait ServiceModel
             if ($Cache->remember($cast_classname . '::cast',
                 fn() => method_exists($cast_classname, 'make'))
             ) {
-                $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
+                $self->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
                 continue;
             }
 
             switch ($attribute_classname) {
                 case Cast::class:
-                    $this->{$key} = (new $cast_classname)->set((array)$value);
+                    $self->{$key} = (new $cast_classname)->set((array)$value);
                     break;
                 case CastToArray::class:
-                    $this->{$key} = array_map(
+                    $self->{$key} = array_map(
                         fn($value) => isset($value->value) ? $value : $cast_classname::tryFrom($value),
                         $value
                     );
                     break;
                 case CastToClasses::class:
-                    $this->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
+                    $self->{$key} = (new $attribute_classname($cast_classname))->set((array)$value);
                     break;
             }
         }
-    }
 
-    public static function make($items = null): self
-    {
-        return new self($items);
+        return $self;
     }
 }

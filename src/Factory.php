@@ -65,7 +65,7 @@ class Factory
     {
         $model = $this->model;
 
-        return new $model($attributes);
+        return $model::make($attributes);
     }
 
     public function state(callable|array $state): static
