@@ -3,7 +3,7 @@
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
 use DateTime;
-use Zerotoprod\ServiceModel\CastToClasses;
+use Zerotoprod\ServiceModel\Attributes\CastToClasses;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class CastToClass

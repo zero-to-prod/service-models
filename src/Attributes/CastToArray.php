@@ -1,7 +1,8 @@
 <?php
 
-namespace Zerotoprod\ServiceModel;
+namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
+use Zerotoprod\ServiceModel\CanCast;
 
 #[Attribute]
 class CastToArray implements CanCast

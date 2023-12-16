@@ -188,10 +188,7 @@ Define properties in your class to match the keys of your data.
 The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
 
 ```php
-use Zerotoprod\ServiceModel\ServiceModel;
-use Zerotoprod\ServiceModel\Cast;
-use Zerotoprod\ServiceModel\CastToArray;
-use Zerotoprod\ServiceModel\CastToClasses;
+use Zerotoprod\ServiceModel\Attributes\Cast;use Zerotoprod\ServiceModel\Attributes\CastToArray;use Zerotoprod\ServiceModel\Attributes\CastToClasses;use Zerotoprod\ServiceModel\ServiceModel;
 
 class Order
 {
@@ -359,8 +356,7 @@ Sometimes you may want to cast an array of classes you cannot use the `ServiceMo
 Use the `CastToClasses` attribute to cast an array of classes.
 
 ```php
-use Zerotoprod\ServiceModel\CastToClasses;
-use Zerotoprod\ServiceModel\ServiceModel;
+use Zerotoprod\ServiceModel\Attributes\CastToClasses;use Zerotoprod\ServiceModel\ServiceModel;
 
 class Order
 {

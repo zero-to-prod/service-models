@@ -3,8 +3,8 @@
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
 use Zerotoprod\AppServiceModel\Tests\Casters\ToChild;
+use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\ServiceModel;
-use Zerotoprod\ServiceModel\Cast;
 
 class TopLevelCast
 {

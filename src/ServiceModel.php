@@ -3,6 +3,9 @@
 namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
+use Zerotoprod\ServiceModel\Attributes\Cast;
+use Zerotoprod\ServiceModel\Attributes\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\CastToClasses;
 
 trait ServiceModel
 {

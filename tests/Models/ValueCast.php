@@ -3,7 +3,7 @@
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
 use Zerotoprod\AppServiceModel\Tests\Casters\AddOne;
-use Zerotoprod\ServiceModel\Cast;
+use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class ValueCast
