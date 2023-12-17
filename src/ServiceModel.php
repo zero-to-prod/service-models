@@ -4,6 +4,7 @@ namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
 use Zerotoprod\ServiceModel\Attributes\Cast;
+use Zerotoprod\ServiceModel\Attributes\CastMethod;
 use Zerotoprod\ServiceModel\Attributes\CastToArray;
 use Zerotoprod\ServiceModel\Attributes\CastToClasses;
 use Zerotoprod\ServiceModel\Cache\Cache;
@@ -72,30 +73,32 @@ trait ServiceModel
                 continue;
             }
 
-            $cast_classname = $ReflectionAttribute->getArguments()[0];
+            $attribute_argument_0 = $ReflectionAttribute->getArguments()[0];
             $attribute_classname = $ReflectionAttribute->getName();
 
             // Cast to array
-            if ($Cache->remember($cast_classname . '::cast',
-                fn() => method_exists($cast_classname, 'make'))
+            if ($Cache->remember($attribute_argument_0 . '::cast',
+                fn() => method_exists($attribute_argument_0, 'make'))
             ) {
-                $self->{$key} = (new $attribute_classname($cast_classname))->parse((array)$value);
+                $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
                 continue;
             }
 
             switch ($attribute_classname) {
                 case Cast::class:
-                    $self->{$key} = (new $cast_classname)->parse((array)$value);
+                    $self->{$key} = (new $attribute_argument_0)->parse((array)$value);
                     break;
                 case CastToArray::class:
                     $self->{$key} = array_map(
-                        fn($value) => isset($value->value) ? $value : $cast_classname::tryFrom($value),
+                        fn($value) => isset($value->value) ? $value : $attribute_argument_0::tryFrom($value),
                         $value
                     );
                     break;
                 case CastToClasses::class:
-                    $self->{$key} = (new $attribute_classname($cast_classname))->parse((array)$value);
+                    $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
                     break;
+                case CastMethod::class:
+                    $self->{$key} = $model_classname::$attribute_argument_0($value);
             }
         }
 
