@@ -66,7 +66,7 @@ $order->id; // 1
 ## Usage
 
 Create a [model](#setting-up-your-model) instance by passing an associative array to the `make()` method of
-your [model](#setting-up-your-model) that has the `ServiceModel` trait.
+your model that uses the `ServiceModel` trait.
 
 ```php
 $order = Order::make([
