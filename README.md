@@ -386,10 +386,10 @@ class TimeClass
 
     public static function set($value): self
     {
-        $instance = new self();
-        $instance->value = $value;
+        $self = new self();
+        $self->value = $value;
 
-        return $instance;
+        return $self;
     }
 }
 ```
