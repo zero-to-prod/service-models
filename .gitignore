@@ -93,3 +93,4 @@ fabric.properties
 /.idea/vcs.xml
 /composer.lock
 /infection.html
+/infection.json

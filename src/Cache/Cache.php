@@ -1,6 +1,6 @@
 <?php
 
-namespace Zerotoprod\ServiceModel;
+namespace Zerotoprod\ServiceModel\Cache;
 class Cache
 {
     private static ?Cache $instance = null;

@@ -1,16 +1,17 @@
 <?php
 
-namespace Zerotoprod\ServiceModel;
+namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class CastToArray implements CanCast
+class CastToArray implements CanParse
 {
     public function __construct(public readonly string $class)
     {
     }
 
-    public function set(array $value): array
+    public function parse(array $value): array
     {
         $results = [];
 

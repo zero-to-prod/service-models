@@ -48,5 +48,3 @@ jobs:
 
     - name: Run Infection
       run: ./infection.phar --min-msi=100 --threads=4
-      env:
-        STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}

@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\CastToArray;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class TopLevelCastArrayEnums

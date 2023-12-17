@@ -1,6 +1,6 @@
 <?php
 
-use Zerotoprod\ServiceModel\Cache;
+use Zerotoprod\ServiceModel\Cache\Cache;
 
 it('sets and returns new value', function () {
     $cache = Cache::getInstance();

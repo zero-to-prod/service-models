@@ -1,6 +1,6 @@
 <?php
 
-namespace Zerotoprod\ServiceModel;
+namespace Zerotoprod\ServiceModel\Attributes;
 
 use Attribute;
 

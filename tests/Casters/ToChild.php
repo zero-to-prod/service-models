@@ -3,11 +3,11 @@
 namespace Zerotoprod\AppServiceModel\Tests\Casters;
 
 use Zerotoprod\AppServiceModel\Tests\Models\ChildWithoutTrait;
-use Zerotoprod\ServiceModel\CanCast;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
 
-class ToChild implements CanCast
+class ToChild implements CanParse
 {
-    public function set(array $value): ChildWithoutTrait
+    public function parse(array $value): ChildWithoutTrait
     {
         $child = new ChildWithoutTrait;
         $child->name = $value['name'];
