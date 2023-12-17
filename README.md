@@ -23,6 +23,8 @@ Transfer [Objects](#setting-up-your-model) (DTOs).
 
 ## Getting Started
 
+If upgrading from v1.0.0, see the [upgrade guide](#upgrading-to-v200).
+
 Install the `service-model` package with composer.
 
 ```bash
