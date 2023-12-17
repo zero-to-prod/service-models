@@ -350,6 +350,54 @@ $order->pickups->location; // Location 1
 $order->pickups->time; // 2021-01-01 00:00:00
 ```
 
+#### Using a Class Method for Parsing
+
+In some cases, you might have a class with a method that accepts a value and returns an instance of the class itself.
+
+The `ServiceModel` package allows you to leverage such methods for parsing values.
+
+You can specify the method to be used for parsing by applying the `CastMethod` attribute to the property in your model.
+The attribute takes the name of the method as its argument.
+
+Here's an example:
+
+```php
+
+use Zerotoprod\ServiceModel\Attributes\CastMethod;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class CastMethodClass
+{
+    use ServiceModel;
+
+    // The 'set' method of the TimeClass will be used for parsing the value
+    #[CastMethod('set')]
+    public TimeClass $time;
+}
+```
+
+In the `TimeClass` below, the `set` method accepts a value, assigns it to the `value` property of a new `TimeClass`
+instance, and then returns the instance:
+
+```php
+class TimeClass
+{
+    public string $value;
+
+    public static function set($value): self
+    {
+        $instance = new self();
+        $instance->value = $value;
+
+        return $instance;
+    }
+}
+```
+
+In this exampleWhen the `ServiceModel` trait processes the `time` property of the `CastMethodClass`, it will invoke
+the `set` method of the `TimeClass`, passing the value to be parsed. The method will return a `TimeClass` instance,
+which will then be assigned to the `time` property.
+
 #### One-to-many Class Casting
 
 Sometimes you may want to cast an array of classes you cannot use the `ServiceModel` trait in.
