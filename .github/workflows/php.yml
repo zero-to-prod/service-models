@@ -33,7 +33,12 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: PestPHP
-        run: ./vendor/bin/pest --parallel
+        run: ./vendor/bin/pest --parallel --coverage-clover
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Download Infection
         run: |
@@ -48,8 +53,3 @@ jobs:
 
       - name: Run Infection
         run: ./infection.phar --min-msi=100 --threads=4
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
