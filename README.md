@@ -4,7 +4,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/zero-to-prod/service-model.svg)](https://packagist.org/packages/zero-to-prod/service-model)
 ![test](https://github.com/zero-to-prod/service-models/actions/workflows/php.yml/badge.svg)
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
-
+[![codecov](https://codecov.io/gh/zero-to-prod/service-models/graph/badge.svg?token=A3PT9316HO)](https://codecov.io/gh/zero-to-prod/service-models)
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
 with [factory](#factories) support.
 
