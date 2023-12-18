@@ -15,36 +15,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: PestPHP 
-      run: ./vendor/bin/pest --parallel
+      - name: PestPHP
+        run: ./vendor/bin/pest --coverage-clover=coverage.xml
+        env:
+          XDEBUG_MODE: coverage
 
-    - name: Download Infection
-      run: |
-        wget https://github.com/infection/infection/releases/download/0.27.0/infection.phar
-        wget https://github.com/infection/infection/releases/download/0.27.0/infection.phar.asc
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    - name: Verify Infection
-      run: |
-        gpg --recv-keys C6D76C329EBADE2FB9C458CFC5095986493B4AA0
-        gpg --with-fingerprint --verify infection.phar.asc infection.phar
-        chmod +x infection.phar
+      - name: Download Infection
+        run: |
+          wget https://github.com/infection/infection/releases/download/0.27.0/infection.phar
+          wget https://github.com/infection/infection/releases/download/0.27.0/infection.phar.asc
 
-    - name: Run Infection
-      run: ./infection.phar --min-msi=100 --threads=4
+      - name: Verify Infection
+        run: |
+          gpg --recv-keys C6D76C329EBADE2FB9C458CFC5095986493B4AA0
+          gpg --with-fingerprint --verify infection.phar.asc infection.phar
+          chmod +x infection.phar
+
+      - name: Run Infection
+        run: ./infection.phar --min-msi=100 --threads=4
