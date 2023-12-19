@@ -17,16 +17,16 @@ class CastToClasses implements CanParse
         $results = [];
 
         foreach ($values as $value) {
+            if (is_array($value)) {
+                $results[] = new $this->class(...$value);
+                continue;
+            }
+
             if ((is_int($value) || is_string($value))
                 && enum_exists($this->class)
                 && method_exists($this->class, 'tryFrom')
             ) {
                 $results[] = $this->class::tryFrom($value);
-                continue;
-            }
-
-            if (is_array($value)) {
-                $results[] = new $this->class(...$value);
                 continue;
             }
 
