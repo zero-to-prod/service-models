@@ -1,4 +1,8 @@
 <?php
+/**
+ * @noinspection PhpUndefinedClassInspection
+ * @noinspection PhpUndefinedMethodInspection
+ */
 
 namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
