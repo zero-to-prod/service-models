@@ -4,5 +4,5 @@ namespace Zerotoprod\ServiceModel\Contracts;
 
 interface CanParse
 {
-    public function parse(array $value);
+    public function parse(array $value); // @pest-ignore-type
 }

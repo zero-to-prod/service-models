@@ -38,7 +38,8 @@
     "prefer-stable": true,
     "require-dev": {
         "pestphp/pest": "^2.19",
-        "symfony/var-dumper": "*"
+      "symfony/var-dumper": "*",
+      "pestphp/pest-plugin-type-coverage": "^2.5"
     },
     "config": {
         "allow-plugins": {

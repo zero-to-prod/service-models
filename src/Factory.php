@@ -21,7 +21,7 @@ class Factory
         return [];
     }
 
-    public function make($attributes = [])
+    public function make(callable|array $attributes = []): object
     {
         if (!empty($attributes)) {
             return $this->state($attributes)->make();
@@ -37,14 +37,14 @@ class Factory
     }
 
 
-    protected function getRawAttributes()
+    protected function getRawAttributes(): array
     {
-        return array_reduce($this->states, function ($carry, $state) {
+        return array_reduce($this->states, function (array $carry, array|callable $state) {
             if ($state instanceof Closure) {
                 $state = $state->bindTo($this);
             }
 
-            return array_merge((array)$carry, (array)$state($carry));
+            return array_merge($carry, (array)$state($carry));
         }, $this->definition());
     }
 
@@ -61,7 +61,7 @@ class Factory
         return $definition;
     }
 
-    public function newModel(array $attributes = [])
+    public function newModel(array $attributes = []): object
     {
         $model = $this->model;
 

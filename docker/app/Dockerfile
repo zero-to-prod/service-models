@@ -1,5 +1,5 @@
 # Dockerfile
-FROM php:8.1-fpm
+FROM php:8.1-cli
 
 # Install Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
