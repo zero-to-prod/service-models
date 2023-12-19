@@ -32,8 +32,13 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: PestPHP
-        run: ./vendor/bin/pest --parallel --coverage-clover=coverage.xml --type-coverage --min=100
+      - name: PestPHP Test
+        run: ./vendor/bin/pest --parallel --coverage-clover=coverage.xml
+        env:
+          XDEBUG_MODE: coverage
+
+      - name: PestPHP Type Coverage
+        run: ./vendor/bin/pest --parallel --type-coverage --min=100
         env:
           XDEBUG_MODE: coverage
 
