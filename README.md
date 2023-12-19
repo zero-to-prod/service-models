@@ -232,6 +232,12 @@ class Order
      */
     #[Cast(ToCarbon::class)]
     public Carbon $ordered_at;
+    
+    /**
+     * Because Carbon uses the static method `parse`, this will 
+     * cast the value to a Carbon instance for free.
+     */
+    public readonly Carbon $created_at;
 
     /**
      * Custom cast for an array of Items.
@@ -460,20 +466,26 @@ class Order
     use ServiceModel;
 
     /**
-     * Transforms the value to a Carbon instance.
+     * Transforms the value to a custom instance.
      */
-    #[Cast(ToCarbon::class)]
-    public Carbon $ordered_at;
+    #[Cast(ToCustomTime::class)]
+    public readonly ToCustomTime $ordered_at;
+
+    /**
+     * Because Carbon uses the static method `parse`, this will 
+     * cast the value to a Carbon instance for free.
+     */
+    public readonly Carbon $created_at;
 ```
 
 ```php
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
-class ToCarbon implements CanParse
+class ToCustomTime implements CanParse
 {
-    public function parse(array $value): Carbon
+    public function parse(array $values): Carbon
     {
-        return Carbon::parse($value[0]);
+        return ToCustomTime::parse($values[0]);
     }
 }
 ```
@@ -481,10 +493,14 @@ class ToCarbon implements CanParse
 ```php
 $order = Order::make([
     'ordered_at' => '2021-01-01 00:00:00',
+    'created_at' => '2021-01-01 00:00:00',
 ]);
 
 $order->ordered_at; // Carbon::class
 $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
+
+$order->created_at; // Carbon::class
+$order->created_at->toDateTimeString(); // '2021-01-01 00:00:00'
 ```
 
 ## `One-to-many` Casting
@@ -523,9 +539,9 @@ class CastToCollection implements CanParse
     {
     }
 
-    public function parse(array $value): Collection
+    public function parse(array $values): Collection
     {
-        return collect($value)->map(fn(array $item) => $this->class::make($item));
+        return collect($values)->map(fn(array $item) => $this->class::make($item));
     }
 }
 ```
@@ -726,9 +742,9 @@ use Zerotoprod\ServiceModel\CanCast;
 
 class ToCarbon implements CanCast
 {
-    public function set(array $value): Carbon
+    public function set(array $values): Carbon
     {
-        return Carbon::parse($value[0]);
+        return Carbon::parse($values[0]);
     }
 }
 ```
@@ -740,9 +756,9 @@ use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 class ToCarbon implements CanParse
 {
-    public function parse(array $value): Carbon
+    public function parse(array $values): Carbon
     {
-        return Carbon::parse($value[0]);
+        return Carbon::parse($values[0]);
     }
 }
 ```
@@ -759,9 +775,9 @@ class CastToCollection implements CanCast
     {
     }
 
-    public function set(array $value): Collection
+    public function set(array $values): Collection
     {
-        return collect($value)->map(fn(array $item) => $this->class::make($item));
+        return collect($values)->map(fn(array $item) => $this->class::make($item));
     }
 }
 ```
@@ -778,9 +794,9 @@ class CastToCollection implements CanParse
     {
     }
 
-    public function parse(array $value): Collection
+    public function parse(array $values): Collection
     {
-        return collect($value)->map(fn(array $item) => $this->class::make($item));
+        return collect($values)->map(fn(array $item) => $this->class::make($item));
     }
 }
 ```

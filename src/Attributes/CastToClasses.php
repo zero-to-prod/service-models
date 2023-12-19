@@ -1,4 +1,8 @@
 <?php
+/**
+ * @noinspection PhpUndefinedClassInspection
+ * @noinspection PhpUndefinedFunctionInspection
+ */
 
 namespace Zerotoprod\ServiceModel\Attributes;
 
@@ -12,16 +16,25 @@ class CastToClasses implements CanParse
     {
     }
 
-    public function parse(array $value): array
+    public function parse(array $values): array
     {
         $results = [];
 
-        foreach ($value as $item) {
-            if (is_array($item)) {
-                $results[] = new $this->class(...$item);
+        foreach ($values as $value) {
+            if (is_array($value)) {
+                $results[] = new $this->class(...$value);
                 continue;
             }
-            $results[] = new $this->class($item);
+
+            if ((is_int($value) || is_string($value))
+                && enum_exists($this->class)
+                && method_exists($this->class, 'tryFrom')
+            ) {
+                $results[] = $this->class::tryFrom($value);
+                continue;
+            }
+
+            $results[] = new $this->class($value);
         }
 
         return $results;

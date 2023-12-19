@@ -1,4 +1,8 @@
 <?php
+/**
+ * @noinspection PhpUndefinedClassInspection
+ * @noinspection PhpUndefinedMethodInspection
+ */
 
 namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
@@ -11,11 +15,11 @@ class CastToArray implements CanParse
     {
     }
 
-    public function parse(array $value): array
+    public function parse(array $values): array
     {
         $results = [];
 
-        foreach ($value as $item) {
+        foreach ($values as $item) {
             $results[] = $this->class::make($item);
         }
 
