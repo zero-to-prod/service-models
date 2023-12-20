@@ -21,7 +21,12 @@ class Factory
         return [];
     }
 
-    public function make(callable|array $attributes = []): object
+    /**
+     * @template TModel of ServiceModel
+     *
+     * @return TModel
+     */
+    public function make(callable|array $attributes = [])
     {
         if (!empty($attributes)) {
             return $this->state($attributes)->make();
@@ -61,11 +66,15 @@ class Factory
         return $definition;
     }
 
-    public function newModel(array $attributes = []): object
+    public function newModel(array $attributes = [])
     {
         $model = $this->model;
 
-        return $model::make($attributes);
+        if (method_exists($model, 'make')) {
+            return $model::make($attributes);
+        }
+
+        return new $model($attributes);
     }
 
     public function state(callable|array $state): static
