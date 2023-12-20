@@ -26,7 +26,7 @@ class Factory
      *
      * @return TModel
      */
-    public function make(callable|array $attributes = [])
+    public function make(callable|array $attributes = []): object
     {
         if (!empty($attributes)) {
             return $this->state($attributes)->make();
@@ -66,7 +66,7 @@ class Factory
         return $definition;
     }
 
-    public function newModel(array $attributes = [])
+    public function newModel(array $attributes = []): object
     {
         $model = $this->model;
 
