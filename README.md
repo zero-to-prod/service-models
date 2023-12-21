@@ -9,14 +9,14 @@
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
 with [factory](#factories) support.
 
-This **zero-dependency** package transforms associative arrays into nested, typesafe Data
-Transfer [Objects](#setting-up-your-model) (DTOs).
+This **zero-dependency** package transforms associative arrays into typesafe [Data
+Transfer Objects](#setting-up-your-model) (DTOs).
 
 ## Features
 
 - **Simple**: Use the `ServiceModel` [trait](#basic-implementation) to automatically map your data.
 - **Custom Type Casting**: Define your own value [casters](#value-casting) for infinite control.
-- **`One-to-many`**: Easily define [one-to-many](#one-to-many-casting) relationships with attributes.
+- **Nested Relationships**: Easily define [one-to-many](#one-to-many-casting) relationships with native PHP attributes.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
@@ -24,7 +24,7 @@ Transfer [Objects](#setting-up-your-model) (DTOs).
 
 ## Getting Started
 
-If upgrading from v1.0.0, see the [upgrade guide](#upgrading-to-v200).
+If upgrading from v1, see the [upgrade guide](#upgrading-to-v2).
 
 Install the `service-model` package with composer.
 
@@ -675,7 +675,7 @@ The cache is also used when processing the properties of the object. For each pr
 a `ReflectionProperty` instance and the property type name are already stored in the cache. If they aren't, they are
 retrieved using reflection and stored in the cache.
 
-## Upgrading to v2.0.0
+## Upgrading to v2
 
 This guide will help you upgrade your existing codebase to use the new features and improvements in the latest version
 of the Service Models package
