@@ -568,16 +568,19 @@ $order->views->first()->name; // 'View 1'
 
 Factories provide a convenient way to generate DTOs with default values.
 
-1. Create a class that `extends` the `Factory` class for your factory.
-2. Set the `public string $model = ` property in your factory pointing to your model.
-3. Set the `public static string $factory = ` property in your model pointing to your factory.
-4. Return your default values as an array in the `definition()` method in your factory.
+1. Use the `ServiceModel` and the  `HasFactory` trait in your model.
+2. Create a class that `extends` the `Factory` class for your factory.
+3. Set the `public string $model = ` property in your factory pointing to your model.
+4. Set the `public static string $factory = ` property in your model pointing to your factory.
+5. Return your default values as an array in the `definition()` method in your factory.
 
 ```php
 use Zerotoprod\ServiceModel\HasFactory;
+use Zerotoprod\ServiceModel\ServiceModel;
 
 class Order
 {
+    use ServiceModel;
     use HasFactory;
 
     public static string $factory = OrderFactory::class;
