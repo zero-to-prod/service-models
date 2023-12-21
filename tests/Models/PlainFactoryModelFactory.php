@@ -6,22 +6,19 @@ use Zerotoprod\ServiceModel\Factory;
 
 class PlainFactoryModelFactory extends Factory
 {
-    public string $model = FactoryModel::class;
+    public string $model = PlainFactoryModel::class;
 
     public function definition(): array
     {
         return [
-            FactoryModel::name => 'definition',
-            FactoryModel::Child => [
-                FactoryModelChild::name => 'child'
-            ]
+            'name' => 'definition',
         ];
     }
 
     public function setName(string $name): self
     {
         return $this->state(fn() => [
-            FactoryModel::name => $name
+            'name' => $name
         ]);
     }
 }
