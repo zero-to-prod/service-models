@@ -1,5 +1,5 @@
 <?php
-
+// @codeCoverageIgnoreStart
 namespace Zerotoprod\ServiceModel\Attributes;
 
 use Attribute;
@@ -11,3 +11,4 @@ class CastMethod
     {
     }
 }
+// @codeCoverageIgnoreEnd
