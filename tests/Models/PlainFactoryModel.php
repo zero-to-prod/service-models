@@ -10,9 +10,8 @@ class PlainFactoryModel
 
     public static string $factory = PlainFactoryModelFactory::class;
 
-    public const name = 'name';
-    public const Child = 'Child';
+    public function __construct(public $attributes)
+    {
 
-    public readonly string $name;
-    public readonly FactoryModelChild $Child;
+    }
 }
