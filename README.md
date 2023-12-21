@@ -6,14 +6,16 @@
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
 [![codecov](https://codecov.io/gh/zero-to-prod/service-models/graph/badge.svg?token=A3PT9316HO)](https://codecov.io/gh/zero-to-prod/service-models)
 
-A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
+A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) Data Transfer
+Objects (DTOs)
 with [factory](#factories) support.
 
 This [zero-dependency](https://raw.githubusercontent.com/zero-to-prod/service-models/master/composer.json) package
-transforms associative arrays into typesafe [Data
-Transfer Objects](#setting-up-your-model) (DTOs).
+provides a [way](#getting-started) to [serialize](https://en.wikipedia.org/wiki/Serialization) associative arrays into
+typesafe [DTOs](#setting-up-your-model).
 
-In an Extract Transform Load (ETL) process, this package is the **_T_** where the data is transformed into a model.
+In the [Extract Transform Load](https://en.wikipedia.org/wiki/Extract,_transform,_load) (ETL) process, this package
+assist in the **_Transformation_** of data into a model.
 
 ## Features
 
