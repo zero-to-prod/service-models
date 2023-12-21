@@ -9,8 +9,11 @@
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) DTOs
 with [factory](#factories) support.
 
-This **zero-dependency** package transforms associative arrays into typesafe [Data
+This [zero-dependency](https://raw.githubusercontent.com/zero-to-prod/service-models/master/composer.json) package
+transforms associative arrays into typesafe [Data
 Transfer Objects](#setting-up-your-model) (DTOs).
+
+In an Extract Transform Load (ETL) process, this package is the **_T_** where the data is transformed into a model.
 
 ## Features
 
