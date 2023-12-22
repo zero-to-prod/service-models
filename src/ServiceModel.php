@@ -3,10 +3,7 @@
 namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
-use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastMethod;
-use Zerotoprod\ServiceModel\Attributes\CastToArray;
-use Zerotoprod\ServiceModel\Attributes\CastToClasses;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Cache\Cache;
 
@@ -115,28 +112,19 @@ trait ServiceModel
 
             // Cast to array
             if ($Cache->remember($attribute_argument_0 . '::cast',
-                fn() => method_exists($attribute_argument_0, 'make'))
+                fn() => (is_object($attribute_argument_0) || is_string($attribute_argument_0))
+                    && method_exists($attribute_argument_0, 'make'))
             ) {
                 $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
                 continue;
             }
 
-            switch ($attribute_classname) {
-                case Cast::class:
-                    $self->{$key} = (new $attribute_argument_0)->parse((array)$value);
-                    break;
-                case CastToArray::class:
-                    $self->{$key} = array_map(
-                        fn($value) => isset($value->value) ? $value : $attribute_argument_0::tryFrom($value),
-                        $value
-                    );
-                    break;
-                case CastToClasses::class:
-                    $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
-                    break;
-                case CastMethod::class:
-                    $self->{$key} = $model_classname::$attribute_argument_0($value);
-            }
+            $self->{$key} = match ($attribute_classname) {
+                CastMethod::class => $model_classname::$attribute_argument_0($value),
+                default => count($ReflectionAttribute->getArguments()) > 1
+                    ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
+                    : (new $attribute_classname($attribute_argument_0))->parse((array)$value),
+            };
         }
 
         $self->afterMake($items);
