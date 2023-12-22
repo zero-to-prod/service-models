@@ -6,8 +6,8 @@ use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 class AddOne implements CanParse
 {
-    public function parse(array $values): int
+    public function parse(array $property_values): int
     {
-        return $values[0] + 1;
+        return $property_values[0] + 1;
     }
 }
