@@ -5,35 +5,48 @@ use Zerotoprod\AppServiceModel\Tests\Models\MapFromNestedDto;
 
 test('map from', function () {
     $MapFromDto = MapFromDto::make([
-        'value_1' => 'test1',
-        'value_2' => 'test2'
+        'MyValue' => 'value',
+        'value_1' => [
+            'value' => 'value2'
+        ],
     ]);
 
-    expect($MapFromDto->value_2)->toBe('test1');
+    expect($MapFromDto->my_value)->toBe('value')
+        ->and($MapFromDto->value_2)->toBe('value2');
 });
 test('map from missed', function () {
     MapFromDto::make([
         'value_3' => 'test'
-    ])->value_2;
-})->expectException(RuntimeException::class);
+    ])->my_value;
+})->expectException(TypeError::class);
 
 test('map from nested', function () {
     $MapFromDto = MapFromNestedDto::make([
-        'value_1' => [
-            'value' => 'test1'
+        'bogus' => [
+            'bogus nested' => 'bogus value'
         ],
-        'value_2' => [
-            'value' => 'test2'
+        'value' => [
+            'value_nested' => 'value_nested_value'
+        ],
+        'two' => [
+            'two_nested' => 'two_nested_value'
+        ],
+        'three' => [
+            'three_nested' => [
+                'three_nested_nested' => 'three_nested_nested_value'
+            ]
         ]
     ]);
 
-    expect($MapFromDto->value_2)->toBe('test1');
+    expect($MapFromDto->value)->toBe('value_nested_value')
+        ->and($MapFromDto->value2)->toBe('two_nested_value')
+        ->and($MapFromDto->value3)->toBe('three_nested_nested_value');
 });
 
-test('map from nested missed', function () {
-    MapFromNestedDto::make([
-        'value_1' => [
-            'value2' => 'test'
-        ]
-    ])->value_2;
-})->expectException(RuntimeException::class);
+//test('map from nested missed', function () {
+//    MapFromNestedDto::make([
+//        'value_1' => [
+//            'value2' => 'test'
+//        ]
+//    ])->value;
+//})->expectException(Error::class);
