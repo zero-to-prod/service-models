@@ -12,7 +12,7 @@ class Cast implements CanParse
     {
     }
 
-    public function parse(array $values)
+    public function parse(array $values): mixed
     {
         return (new $this->class)->parse($values);
     }
