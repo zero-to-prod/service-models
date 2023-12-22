@@ -3,7 +3,7 @@
 use Zerotoprod\AppServiceModel\Tests\Models\MapFromDto;
 
 test('map from', function () {
-    $MapFromDto = MapFromDto::make(['value_1' => 'test1']);
+    $MapFromDto = MapFromDto::make(['MyValue' => 'value']);
 
-    expect($MapFromDto->value_4)->toBe('test1');
+    expect($MapFromDto->value_4)->toBe('value');
 });
