@@ -21,6 +21,7 @@ assist in the **_Transformation_** of data into a model.
 
 - **Simple**: Use the `ServiceModel` [trait](#basic-implementation) to automatically map your data.
 - **Custom Type Casting**: Define your own value [casters](#value-casting) for infinite control.
+- **Plugin Architecture**: Build your own [plugins](#plugins) with PHP Attributes.
 - **Nested Relationships**: Easily define [one-to-many](#one-to-many-casting) relationships with native PHP attributes.
 - **Mapping**: Rename and [map](#mapping) your data how you please.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
@@ -570,6 +571,70 @@ $order->views->first(); // View::class
 $order->views->first()->name; // 'View 1'
 ```
 
+## Plugins
+
+You can define your own attributes to extend the functionality of the `ServiceModel` trait.
+
+The property values are passed to the `parse()` method of the attribute.
+
+The Attribute values are passed to the constructor of the attribute.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class MyClass
+{
+    use ServiceModel;
+
+    #[CustomCaster(1)]
+    public readonly int $add_one;
+    
+    #[CustomValueCaster(1, 2)]
+    public readonly int $add_two;
+}
+```
+
+```php
+$MyClass = MyClass::make(['add_one' => 1, 'add_two' => 1]);
+$MyClass->add_one; // 2
+$MyClass->add_two; // 4
+```
+
+```php
+use Attribute;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+
+#[Attribute]
+class CustomCaster implements CanParse
+{
+    public function __construct(public readonly int $attribute_constructor_value)
+    {
+    }
+
+    public function parse(array $values): int
+    {
+        return $values[0] + $this->attribute_constructor_value;
+    }
+}
+```
+
+```php
+use Attribute;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+
+#[Attribute]
+class CustomValueCaster implements CanParse
+{
+    public function __construct(public readonly int $value_1, public readonly int $value_2)
+    {
+    }
+
+    public function parse(array $values): int
+    {
+        return $values[0] + $this->value_1 + $this->value_2;
+    }
+}
+```
 ## Factories
 
 Factories provide a convenient way to generate DTOs with default values.
