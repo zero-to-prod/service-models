@@ -24,19 +24,43 @@ trait ServiceModel
         $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
 
         foreach ($items as $key => $value) {
-            if (!$ReflectionClass->hasProperty($key)) {
-                $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
+            $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
+            $classnames = $Cache->remember(static::class . '::classnames', function () use ($Properties) {
+                $classnames = [];
                 foreach ($Properties as $Property) {
                     $attributes = $Property->getAttributes();
                     if (empty($attributes)) {
                         continue;
                     }
+                    $classnames[] = $attributes[0]->getName();
+                }
+
+                return $classnames;
+            });
+
+            if (in_array(MapFrom::class, $classnames, true)) {
+                foreach ($Properties as $Property) {
+                    $attributes = $Property->getAttributes();
+
+                    if (empty($attributes)) {
+                        continue;
+                    }
+
                     $classname = $attributes[0]->getName();
                     if ($classname === MapFrom::class) {
                         $map = $attributes[0]->getArguments()[0];
-                        $self->{$Property->getName()} = (new $classname($map))->parse((array)$value, $key);
+                        if ($key === $map || (strpos($map, '.') && is_array($value) && $key)) {
+                            $property_value = (new $classname($map))->parse((array)$value);
+                            if ($property_value) {
+                                $self->{$Property->getName()} = $property_value;
+                            }
+                        }
                     }
                 }
+                continue;
+            }
+
+            if (!$ReflectionClass->hasProperty($key)) {
                 continue;
             }
 
