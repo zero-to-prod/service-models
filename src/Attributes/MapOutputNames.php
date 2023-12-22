@@ -16,4 +16,4 @@ class MapOutputNames
     {
     }
 }
-// @codeCoverageIgnoreStart
+// @codeCoverageIgnoreEnd
