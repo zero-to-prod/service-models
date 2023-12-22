@@ -5,6 +5,7 @@ namespace Zerotoprod\ServiceModel;
 use ReflectionClass;
 use Zerotoprod\ServiceModel\Attributes\CastMethod;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\Attributes\ToArray;
 use Zerotoprod\ServiceModel\Cache\Cache;
 
 trait ServiceModel
@@ -134,5 +135,18 @@ trait ServiceModel
 
     public function afterMake($items): void
     {
+    }
+
+    public function toResource(): array
+    {
+        $ReflectionClass = new ReflectionClass($this);
+
+        if (!$ReflectionClass->getAttributes()[0]) {
+            return (new ToArray)->parse((array)$this);
+        }
+
+        $classname = $ReflectionClass->getAttributes()[0]->getArguments()[0];
+
+        return (new $classname)->parse((array)$this);
     }
 }
