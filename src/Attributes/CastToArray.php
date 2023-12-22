@@ -5,6 +5,7 @@
  */
 
 namespace Zerotoprod\ServiceModel\Attributes;
+
 use Attribute;
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
@@ -20,7 +21,13 @@ class CastToArray implements CanParse
         $results = [];
 
         foreach ($values as $item) {
-            $results[] = $this->class::make($item);
+            if (method_exists($this->class, 'make')) {
+                $results[] = $this->class::make($item);
+
+                continue;
+            }
+
+            $results[] = isset($item->value) ? $item : $this->class::tryFrom($item);
         }
 
         return $results;
