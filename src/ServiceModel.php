@@ -7,6 +7,7 @@ use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastMethod;
 use Zerotoprod\ServiceModel\Attributes\CastToArray;
 use Zerotoprod\ServiceModel\Attributes\CastToClasses;
+use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Cache\Cache;
 
 trait ServiceModel
@@ -23,6 +24,42 @@ trait ServiceModel
         $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
 
         foreach ($items as $key => $value) {
+            $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
+            $classnames = $Cache->remember(static::class . '::classnames', function () use ($Properties) {
+                $classnames = [];
+                foreach ($Properties as $Property) {
+                    $attributes = $Property->getAttributes();
+                    if (empty($attributes)) {
+                        continue;
+                    }
+                    $classnames[] = $attributes[0]->getName();
+                }
+
+                return $classnames;
+            });
+
+            if (in_array(MapFrom::class, $classnames, true)) {
+                foreach ($Properties as $Property) {
+                    $attributes = $Property->getAttributes();
+
+                    if (empty($attributes)) {
+                        continue;
+                    }
+
+                    $classname = $attributes[0]->getName();
+                    if ($classname === MapFrom::class) {
+                        $map = $attributes[0]->getArguments()[0];
+                        if ($key === $map || (strpos($map, '.') && is_array($value) && $key)) {
+                            $property_value = (new $classname($map))->parse((array)$value);
+                            if ($property_value) {
+                                $self->{$Property->getName()} = $property_value;
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+
             if (!$ReflectionClass->hasProperty($key)) {
                 continue;
             }
@@ -102,6 +139,12 @@ trait ServiceModel
             }
         }
 
+        $self->afterMake($items);
+
         return $self;
+    }
+
+    public function afterMake($items): void
+    {
     }
 }
