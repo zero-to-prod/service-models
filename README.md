@@ -27,6 +27,8 @@ assist in the **_Transformation_** of data into a model.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
+- **Resource Support**: Transform you ServiceModel to an associative array with [snake_case](#resource-support) keys or
+  implement your own.
 - **Fast**: Designed with [performance](#caching) in mind.
 
 ## Getting Started
@@ -635,6 +637,7 @@ class CustomValueCaster implements CanParse
     }
 }
 ```
+
 ## Factories
 
 Factories provide a convenient way to generate DTOs with default values.
@@ -819,6 +822,70 @@ new `ReflectionClass` instance is created and stored in the cache.
 The cache is also used when processing the properties of the object. For each property, the trait checks if
 a `ReflectionProperty` instance and the property type name are already stored in the cache. If they aren't, they are
 retrieved using reflection and stored in the cache.
+
+## Resource Support
+
+Sometimes you want to convert the case of your key to snake_case.
+
+You can do this by adding the `#[MapOutputNames(ToSnakeCase::class)]` attribute to your model and using
+the `toResource()` method.
+
+```php
+use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
+use Zerotoprod\ServiceModel\Attributes\ToSnakeCase;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+#[MapOutputNames(ToSnakeCase::class)]
+class MyClass
+{
+    use ServiceModel;
+
+    public readonly string $LastName;
+}
+```
+
+```php
+$MyClass = MyClass::make(['LastName' => 'Doe']);
+$MyClass->toResource(); // ['last_name' => 'Doe']
+```
+
+### Build Your Own Resource Transformer
+
+You can build your own resource transformer by doing this implementing the `CanParse` interface.
+
+The `$values` parameter is the value of the object typecast as an array.
+
+```php
+use Attribute;
+use UnitEnum;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
+
+#[Attribute]
+class ToCustomCase implements CanParse
+{
+    public function parse(array $values): array
+    {
+        return $values;
+    }
+}
+```
+
+You can add this to the top of your model like this:
+
+```php
+use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+#[MapOutputNames(ToCustomCase::class)]
+class MyClass
+{
+    use ServiceModel;
+
+    public readonly string $LastName;
+}
+```
+
+When you call the `toResource()` method, it will use your custom resource transformer.
 
 ## Upgrading to v2
 
