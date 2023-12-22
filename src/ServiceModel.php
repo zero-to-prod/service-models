@@ -7,6 +7,7 @@ use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastMethod;
 use Zerotoprod\ServiceModel\Attributes\CastToArray;
 use Zerotoprod\ServiceModel\Attributes\CastToClasses;
+use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Cache\Cache;
 
 trait ServiceModel
@@ -24,6 +25,18 @@ trait ServiceModel
 
         foreach ($items as $key => $value) {
             if (!$ReflectionClass->hasProperty($key)) {
+                $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
+                foreach ($Properties as $Property) {
+                    $attributes = $Property->getAttributes();
+                    if (empty($attributes)) {
+                        continue;
+                    }
+                    $classname = $attributes[0]->getName();
+                    if ($classname === MapFrom::class) {
+                        $map = $attributes[0]->getArguments()[0];
+                        $self->{$Property->getName()} = (new $classname($map))->parse((array)$value, $key);
+                    }
+                }
                 continue;
             }
 
@@ -102,6 +115,12 @@ trait ServiceModel
             }
         }
 
+        $self->afterMake($items);
+
         return $self;
+    }
+
+    public function afterMake($items): void
+    {
     }
 }
