@@ -7,33 +7,29 @@
 namespace Zerotoprod\ServiceModel\Attributes;
 
 use Attribute;
-use RuntimeException;
+use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class MapFrom
+class MapFrom implements CanParse
 {
     public function __construct(public readonly string $map)
     {
     }
 
-    public function parse(array $values, string $key): mixed
+    public function parse(array $values): mixed
     {
-        if (strpos($this->map, '.')) {
-            return $this->valueByPath($values, explode('.', $this->map)[1])
-                ?? throw new RuntimeException("MapFrom('$key') not found.");
-        }
-
-        if ($key === $this->map) {
-            return $values[0];
-        }
-
-        throw new RuntimeException("MapFrom('$key') not found.");
+        return strpos($this->map, '.')
+            ? $this->valueByPath($values, $this->map)
+            : $values[0];
     }
 
-    public function valueByPath(array $array, string $path): array|string|null
+    public function valueByPath(array $array, string $map): array|string|null
     {
-        return array_reduce(explode('.', $path), function (array $carry, string $key) {
-            return $carry[$key] ?? null;
+        $maps = explode('.', $map);
+        array_shift($maps);
+
+        return array_reduce(explode('.', implode('.', $maps)), function (array $carry, string $key) {
+            return $carry[$key] ?? [];
         }, $array);
     }
 }
