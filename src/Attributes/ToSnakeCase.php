@@ -28,12 +28,13 @@ class ToSnakeCase implements CanParse
         return $result;
     }
 
-    public function snake($value, $delimiter = '_')
+    public function snake(string $value, string $delimiter = '_'): mixed
     {
         if (!ctype_lower($value)) {
             $value = preg_replace('/\s+/u', '', ucwords($value));
             $value = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
         }
+
         return $value;
     }
 }
