@@ -22,6 +22,7 @@ assist in the **_Transformation_** of data into a model.
 - **Simple**: Use the `ServiceModel` [trait](#basic-implementation) to automatically map your data.
 - **Custom Type Casting**: Define your own value [casters](#value-casting) for infinite control.
 - **Nested Relationships**: Easily define [one-to-many](#one-to-many-casting) relationships with native PHP attributes.
+- **Mapping**: Rename and [map](#mapping) your data how you please.
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
@@ -664,6 +665,80 @@ This allows you to access custom methods on the model.
 
 ```php
 Order::make([...])->toJson();
+```
+
+## Mapping
+
+The #[MapFrom] attribute allows you to associate a property from a DTO (Data Transfer Object) with another property that
+possesses a different name.
+
+This association is achievable using either a "dot" notation property name or an index.
+
+### Renaming
+
+The following example shows how to rename a property using the `#[MapFrom]` attribute.
+
+```php
+use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class MyClass
+{
+    use ServiceModel;
+
+    #[MapFrom('MyValue')]
+    public readonly string $my_value;
+}
+```
+
+```php
+$MyClass = MyClass::make(['MyValue' => 'value']);
+$MyClass->my_value; // 'value'
+```
+
+### Mapping Nested Properties
+
+The following example shows how to map a nested property using the `#[MapFrom]` attribute.
+
+```php
+use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class MyClass
+{
+    use ServiceModel;
+
+    #[MapFrom('value.nested')]
+    public readonly string $value;
+}
+```
+
+```php
+$MyClass = MyClass::make(['value' => ['nested' => 'value']]);
+$MyClass->value; // 'value'
+```
+
+## Lifecycle Hooks
+
+Use the `afterMake()` method to run code after the model is instantiated.
+
+The `$attributes` parameter is the value passed to the `make()` method.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class MyClass
+{
+    use ServiceModel;
+
+    public readonly string $value;
+    
+    public function afterMake($attributes): void
+    {
+        // Example of manual assignment.
+        $this->value = $attributes['Value'];
+    }
+}
 ```
 
 ## Caching
