@@ -9,6 +9,12 @@ class MapFromNestedDto
 {
     use ServiceModel;
 
-    #[MapFrom('value_1.value')]
-    public readonly string $value_2;
+    #[MapFrom('value.value_nested')]
+    public readonly string $value;
+
+    #[MapFrom('two.two_nested')]
+    public readonly string $value2;
+
+    #[MapFrom('three.three_nested.three_nested_nested')]
+    public readonly string $value3;
 }
