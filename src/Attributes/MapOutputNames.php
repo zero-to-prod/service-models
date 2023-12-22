@@ -1,4 +1,5 @@
 <?php
+// @codeCoverageIgnoreStart
 /**
  * @noinspection PhpUndefinedClassInspection
  * @noinspection PhpUndefinedFunctionInspection
@@ -15,3 +16,4 @@ class MapOutputNames
     {
     }
 }
+// @codeCoverageIgnoreStart
