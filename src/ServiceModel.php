@@ -137,6 +137,7 @@ trait ServiceModel
     {
     }
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public function toResource(): array
     {
         $ReflectionClass = new ReflectionClass($this);
