@@ -9,12 +9,14 @@ class MapFromDto
 {
     use ServiceModel;
 
-    #[MapFrom('value_1')]
+    #[MapFrom('MyValue')]
+    public readonly string $my_value;
+    #[MapFrom('value_1.value')]
     public readonly string $value_2;
     public string $value_4;
 
     public function afterMake($items): void
     {
-        $this->value_4 = $items['value_1'];
+        $this->value_4 = $items['MyValue'];
     }
 }
