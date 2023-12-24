@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace Zerotoprod\AppServiceModel\Tests\Models\SmokeTest;
 
