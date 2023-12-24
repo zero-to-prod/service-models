@@ -75,17 +75,126 @@ $order->id; // 1
 
 ## Usage
 
-Create a [model](#setting-up-your-model) instance by passing an associative array to the `make()` method of
+Create a `ServiceModel` by passing an associative array to the `make()` method of
 your model that uses the `ServiceModel` trait.
 
 ```php
+$Order = Order::make(['id' => 1]);
+
+$Order->id; // 1
+```
+
+### Setting Up Your Model
+
+Define properties in your class to match the keys of your data.
+
+The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
+
+```php
+use Zerotoprod\ServiceModel\Attributes\Cast;
+use Zerotoprod\ServiceModel\Attributes\CastUsing;
+use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\Attributes\ArrayOf;
+use Zerotoprod\ServiceModel\ServiceModel;
+
+class Order
+{
+    use ServiceModel;
+
+    /**
+     * Automatically cast OrderDetails to a model by using
+     * the ServiceModel trait in OrderDetails.
+     */
+    public readonly OrderDetails $details;
+    
+    /**
+     * Define you own value caster.
+     */
+     #[Cast(ToJson::class)]
+    public readonly string $metadata;
+
+    /**
+     * If you have a class the can cast the value, 
+     * you can use the CastUsing attribute to 
+     * define the method to pass values to.
+     */
+    #[CastUsing('set')]
+    public readonly TimeClass $time;
+    
+    /**
+     * Rename your values.
+     */
+    #[MapFrom('AcknowledgedAt')]
+    public readonly string $acknowledged_at;
+    
+    /**
+     * Remap your values.
+     */
+    #[MapFrom('vendor_details.serial_number')]
+    public readonly string $serial_number;
+    
+    /**
+     * Use a value-backed enum to automatically cast the value.
+     */
+    public readonly Status $status;
+    
+    /**
+     * Casts to an array of enums.
+     * @var Tag[] $tags
+     */
+    #[ArrayOf(Tag::class)]
+    public readonly array $tags;
+
+    /**
+     * Unpacks the array into the constructor of the type-hinted class.
+     * NOTE: PickupInfo does not use the ServiceModel trait.
+     */
+    public readonly PickupInfo $PickupInfo;
+    
+    /**
+     * Casts to an array of PickupInfo.
+     * NOTE: PickupInfo does not use the ServiceModel trait.
+     * 
+     * @var PickupInfo[] $previous_pickups
+     */
+    #[ArrayOf(PickupInfo::class)]
+    public readonly array $previous_pickups;
+    
+    /**
+     * Because Carbon uses the static method `parse`, this will 
+     * cast the value to a Carbon instance for free.
+     */
+    public readonly Carbon $created_at;
+
+    /**
+     * Creates an array of Items.
+     * @var Item[] $items
+     */
+    #[ArrayOf(Item::class)]
+    public readonly array $items;
+    
+    /**
+     * Use a custom cast. 
+     * @var Collection<int, View> $views
+     */
+    #[CollectionOf(View::class)]
+    public readonly Collection $views;
+}
+```
+
+Pass an associative array to the `make()` method of your model.
+```php
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
+    'metadata' => ['id' => 1, 'name' => 'Order 1'],
+    'time' => '2021-01-01 00:00:00',
+    'vendor_details' => ['serial_number' => '123456789'],
     'status' => 'pending',
     'tags' => ['important', 'rush'],
-    'ordered_at' => '2021-01-01 00:00:00',
+    'PickupInfo' => ['location' => 'Location 1', 'time' => '2021-01-01 00:00:00'],
+    'created_at' => '2021-01-01 00:00:00',
     'items' => [
-        Item::make(['id' => 1,'name' => 'Item 1']),
+        ['id' => 1,'name' => 'Item 1'],
         ['id' => 2,'name' => 'Item 2']],
     'views' => [
         ['id' => 1,'name' => 'View 1'],
@@ -93,26 +202,36 @@ $order = Order::make([
 ]);
 ```
 
-## Accessing Type Safe Properties
+### Accessing Type Safe Properties
 
-Access your data with the arrow syntax.
+Access your data with arrow syntax.
 
 ```php
 // Nested Models
 $details = $order->details; // Order::class
 $details = $order->details->name; // 'Order 1'
 
+// Custom Casters
+$metadata = $order->metadata; // '{"id":1,"name":"Order 1"}'
+
+// CastUsing
+$time = $order->time; // TimeClass::class
+$time = $order->time->value; // '2021-01-01 00:00:00'
+
+// Remapped Properties
+$serial_number = $order->serial_number; // '123456789'
+
 // Enums
 $status = $order->status; // Status::pending
 $status = $order->status->value; // 'pending'
 
-// Nested Enums
+// Array of Enums
 $tags = $order->tags[0]; // Tag::important
 $tags = $order->tags[0]->value; // 'important'
 
 // Value Casting
-$ordered_at = $order->ordered_at; // Carbon::class
-$ordered_at = $order->ordered_at->toDateTimeString(); // '2021-01-01 00:00:00'
+$created_at = $order->created_at; // Carbon::class
+$created_at = $order->created_at->toDateTimeString(); // '2021-01-01 00:00:00'
 
 // One-to-many array Casting
 $item_id = $order->items[0]; // Item::class
@@ -152,7 +271,7 @@ class Order
      * Using the `ServiceModel` trait in the child class (OrderDetails)
      * class will automatically instantiate new class.
      */
-    public OrderDetails $details;
+    public readonly OrderDetails $details;
 }
 ```
 
@@ -165,8 +284,8 @@ class OrderDetails
 {
     use ServiceModel;
 
-    public int $id;
-    public string $name;
+    public readonly int $id;
+    public readonly string $name;
 }
 ```
 
@@ -191,79 +310,6 @@ $order = Order::make([
 $order->details->id; // 1
 $order->details->name; // 'Order 1'
 ```
-
-## Setting Up Your Model
-
-Define properties in your class to match the keys of your data.
-
-The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
-
-```php
-use Zerotoprod\ServiceModel\Attributes\Cast;use Zerotoprod\ServiceModel\Attributes\CastToArray;use Zerotoprod\ServiceModel\Attributes\CastToClasses;use Zerotoprod\ServiceModel\ServiceModel;
-
-class Order
-{
-    use ServiceModel;
-
-    /**
-     * Automatically cast OrderDetails to a model by using
-     * the ServiceModel trait in OrderDetails.
-     */
-    public OrderDetails $details;
-    
-    /**
-     * Use a value-backed enum to automatically cast the value.
-     */
-    public Status $status;
-    
-    /**
-     * Unpacks the array into the constructor of the type-hinted class.
-     */
-    public readonly PickupInfo $pickups;
-    
-    /**
-     * Casts to an array of PickupInfo.
-     * @var PickupInfo[] $pickups
-     */
-    #[CastToClasses(PickupInfo::class)]
-    public readonly array $pickups;
-    
-    /**
-     * Casts to an array of enums.
-     * @var Tag[] $tags
-     */
-    #[CastToArray(Tag::class)]
-    public array $tags;
-
-    /**
-     * Custom cast for to transform the value into a Carbon instance.
-     * @var Carbon $ordered_at
-     */
-    #[Cast(ToCarbon::class)]
-    public Carbon $ordered_at;
-    
-    /**
-     * Because Carbon uses the static method `parse`, this will 
-     * cast the value to a Carbon instance for free.
-     */
-    public readonly Carbon $created_at;
-
-    /**
-     * Custom cast for an array of Items.
-     * @var Item[] $items
-     */
-    #[CastToArray(Item::class)]
-    public array $items;
-    
-    /**
-     * Use a custom cast. 
-     * @var Collection<int, View> $views
-     */
-    #[CastToCollection(View::class)]
-    public Collection $views;
-}
-```
-
 ## Native Object Support
 
 This package provides native support for the following objects:
@@ -285,14 +331,14 @@ class Order
     /**
      * Casts to a Status enum
      */
-    public Status $status;
+    public readonly Status $status;
     
     /**
      * Casts to an array of Status enum.
      * @var Status[] $statuses
      */
     #[CastToArray(Status::class)]
-    public array $statuses;
+    public readonly array $statuses;
 }
 ```
 
@@ -372,23 +418,23 @@ In some cases, you might have a class with a method that accepts a value and ret
 
 The `ServiceModel` package allows you to leverage such methods for parsing values.
 
-You can specify the method to be used for parsing by applying the `CastMethod` attribute to the property in your model.
+You can specify the method to be used for parsing by applying the `CastUsing` attribute to the property in your model.
 The attribute takes the name of the method as its argument.
 
 Here's an example:
 
 ```php
 
-use Zerotoprod\ServiceModel\Attributes\CastMethod;
+use Zerotoprod\ServiceModel\Attributes\CastUsing;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class CastMethodClass
+class MyClass
 {
     use ServiceModel;
 
     // The 'set' method of the TimeClass will be used for parsing the value
-    #[CastMethod('set')]
-    public TimeClass $time;
+    #[CastUsing('set')]
+    public readonly TimeClass $time;
 }
 ```
 
@@ -410,7 +456,7 @@ class TimeClass
 }
 ```
 
-In this exampleWhen the `ServiceModel` trait processes the `time` property of the `CastMethodClass`, it will invoke
+In this exampleWhen the `ServiceModel` trait processes the `time` property of the `MyClass`, it will invoke
 the `set` method of the `TimeClass`, passing the value to be parsed. The method will return a `TimeClass` instance,
 which will then be assigned to the `time` property.
 
@@ -418,10 +464,11 @@ which will then be assigned to the `time` property.
 
 Sometimes you may want to cast an array of classes you cannot use the `ServiceModel` trait in.
 
-Use the `CastToClasses` attribute to cast an array of classes.
+Use the `ArrayOf` attribute to cast an array of classes.
 
 ```php
-use Zerotoprod\ServiceModel\Attributes\CastToClasses;use Zerotoprod\ServiceModel\ServiceModel;
+use Zerotoprod\ServiceModel\Attributes\ArrayOf;
+use Zerotoprod\ServiceModel\ServiceModel;
 
 class Order
 {
@@ -431,7 +478,7 @@ class Order
      * Casts to an array of PickupInfo.
      * @var PickupInfo[] $pickups
      */
-    #[CastToClasses(PickupInfo::class)]
+    #[ArrayOf(PickupInfo::class)]
     public readonly array $pickups;
 }
 ```
@@ -528,13 +575,13 @@ class Order
      * Casts to a Collection containing View classes.
      * @var Collection<int, View> $views
      */
-    #[CastToCollection(View::class)]
+    #[CollectionOf(View::class)]
     public Collection $views;
 }
 ```
 
 > IMPORTANT: The class name passed in the Attribute (`View::class`) is passed in the constructor of
-> the `CastToCollection` class.
+> the `CollectionOf` class.
 
 > IMPORTANT: Don't forget to add `#[Attribute]` to the top of your class.
 
@@ -542,7 +589,7 @@ class Order
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class CastToCollection implements CanParse
+class CollectionOf implements CanParse
 {
     public function __construct(public readonly string $class)
     {
@@ -981,7 +1028,7 @@ class ToCarbon implements CanParse
 use Zerotoprod\ServiceModel\CanCast;
 
 #[Attribute]
-class CastToCollection implements CanCast
+class CollectionOf implements CanCast
 {
     public function __construct(public readonly string $class)
     {
@@ -1000,7 +1047,7 @@ class CastToCollection implements CanCast
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class CastToCollection implements CanParse
+class CollectionOf implements CanParse
 {
     public function __construct(public readonly string $class)
     {

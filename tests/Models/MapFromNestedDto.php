@@ -17,4 +17,6 @@ class MapFromNestedDto
 
     #[MapFrom('three.three_nested.three_nested_nested')]
     public readonly string $value3;
+
+    public readonly string $test;
 }
