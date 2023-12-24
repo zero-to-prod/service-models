@@ -9,6 +9,9 @@ namespace Zerotoprod\ServiceModel\Attributes;
 use Attribute;
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
+/**
+ * @deprecated use ArrayOf instead
+ */
 #[Attribute]
 class CastToArray implements CanParse
 {
@@ -18,18 +21,6 @@ class CastToArray implements CanParse
 
     public function parse(array $values): array
     {
-        $results = [];
-
-        foreach ($values as $item) {
-            if (method_exists($this->class, 'make')) {
-                $results[] = $this->class::make($item);
-
-                continue;
-            }
-
-            $results[] = isset($item->value) ? $item : $this->class::tryFrom($item);
-        }
-
-        return $results;
+        return (new ArrayOf($this->class))->parse($values);
     }
 }
