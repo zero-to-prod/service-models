@@ -7,11 +7,10 @@
 [![codecov](https://codecov.io/gh/zero-to-prod/service-models/graph/badge.svg?token=A3PT9316HO)](https://codecov.io/gh/zero-to-prod/service-models)
 
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) Data Transfer
-Objects (DTOs)
-with [factory](#factories) support.
+Objects (DTOs) with [factory](#factories) support.
 
 This [zero-dependency](https://raw.githubusercontent.com/zero-to-prod/service-models/master/composer.json) package
-provides a [way](#getting-started) to [serialize](https://en.wikipedia.org/wiki/Serialization) associative arrays into
+provides a [way](#getting-started) to [serialize](https://en.wikipedia.org/wiki/Serialization) data into
 typesafe [DTOs](#setting-up-your-model).
 
 In the [Extract Transform Load](https://en.wikipedia.org/wiki/Extract,_transform,_load) (ETL) process, this package
@@ -56,11 +55,13 @@ class Order
 }
 ```
 
-Pass an associative array to the `make()` method of your [model](#setting-up-your-model).
+Pass an associative array or json string to the `make()` method of your [model](#setting-up-your-model).
 
 ```php
 $Order = Order::make(['id' => 1]);
+$Order->id; // 1
 
+$Order = Order::make('{"id":1}');
 $Order->id; // 1
 ```
 
@@ -75,12 +76,14 @@ $order->id; // 1
 
 ## Usage
 
-Create a `ServiceModel` by passing an associative array to the `make()` method of
+Create a `ServiceModel` by passing an associative array or json string to the `make()` method of
 your model that uses the `ServiceModel` trait.
 
 ```php
 $Order = Order::make(['id' => 1]);
+$Order->id; // 1
 
+$Order = Order::make('{"id":1}');
 $Order->id; // 1
 ```
 
@@ -182,7 +185,7 @@ class Order
 }
 ```
 
-Pass an associative array to the `make()` method of your model.
+Pass an associative array or json string to the `make()` method of your model.
 ```php
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
