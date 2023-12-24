@@ -3,7 +3,7 @@
 namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
-use Zerotoprod\ServiceModel\Attributes\CastMethod;
+use Zerotoprod\ServiceModel\Attributes\CastUsing;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ToArray;
 use Zerotoprod\ServiceModel\Cache\Cache;
@@ -51,11 +51,11 @@ trait ServiceModel
                             $property_value = (new $classname($map))->parse((array)$value);
                             if ($property_value) {
                                 $self->{$Property->getName()} = $property_value;
+                                continue 2;
                             }
                         }
                     }
                 }
-                continue;
             }
 
             if (!$ReflectionClass->hasProperty($key)) {
@@ -121,7 +121,9 @@ trait ServiceModel
             }
 
             $self->{$key} = match ($attribute_classname) {
-                CastMethod::class => $model_classname::$attribute_argument_0($value),
+                CastUsing::class => is_array($value)
+                    ? $model_classname::$attribute_argument_0(...$value)
+                    : $model_classname::$attribute_argument_0($value),
                 default => count($ReflectionAttribute->getArguments()) > 1
                     ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
                     : (new $attribute_classname($attribute_argument_0))->parse((array)$value),
