@@ -35,18 +35,12 @@ test('map from nested', function () {
             'three_nested' => [
                 'three_nested_nested' => 'three_nested_nested_value'
             ]
-        ]
+        ],
+        'test' => 'test'
     ]);
 
     expect($MapFromDto->value)->toBe('value_nested_value')
         ->and($MapFromDto->value2)->toBe('two_nested_value')
-        ->and($MapFromDto->value3)->toBe('three_nested_nested_value');
+        ->and($MapFromDto->value3)->toBe('three_nested_nested_value')
+        ->and($MapFromDto->test)->toBe('test');
 });
-
-//test('map from nested missed', function () {
-//    MapFromNestedDto::make([
-//        'value_1' => [
-//            'value2' => 'test'
-//        ]
-//    ])->value;
-//})->expectException(Error::class);
