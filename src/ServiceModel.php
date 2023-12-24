@@ -12,11 +12,18 @@ trait ServiceModel
 {
     public static function make($items = null): self
     {
-        $self = new self;
+        if (is_string($items)) {
+            $decoded = json_decode($items, true);
+            if (is_array($decoded)) {
+                $items = $decoded;
+            }
+        }
 
         if (!$items || !(is_array($items) || is_object($items))) {
-            return $self;
+            return new self;
         }
+
+        $self = new self;
 
         $Cache = Cache::getInstance();
         $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
