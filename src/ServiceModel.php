@@ -86,11 +86,8 @@ trait ServiceModel
 
                 // ServiceModels
                 if (method_exists($model_classname, 'make')) {
-                    $trait_names = (new ReflectionClass($model_classname))->getTraitNames();
-                    if (in_array(ServiceModel::class, $trait_names, true)) {
-                        $self->{$key} = $model_classname::make($value);
-                        continue;
-                    }
+                    $self->{$key} = $model_classname::make($value);
+                    continue;
                 }
 
                 // Enums
