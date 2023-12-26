@@ -23,6 +23,7 @@ assist in the **_Transformation_** of data into a model.
 - **Plugin Architecture**: Build your own [plugins](#plugins) with PHP Attributes.
 - **Nested Relationships**: Easily define [one-to-many](#one-to-many-casting) relationships with native PHP attributes.
 - **Mapping**: Rename and [map](#mapping) your data how you please.
+- **Validation**: Control when required properties are [validated](#validation).
 - **Factory Support**: Use the `factory()` [method](#factories) to make a DTO with default values.
 - **Native Object Support**: [Native object support](#native-object-support) for [Enums](#enums)
   and [Classes](#classes), with no extra steps.
@@ -186,6 +187,7 @@ class Order
 ```
 
 Pass an associative array or json string to the `make()` method of your model.
+
 ```php
 $order = Order::make([
     'details' => ['id' => 1, 'name' => 'Order 1'],
@@ -313,6 +315,7 @@ $order = Order::make([
 $order->details->id; // 1
 $order->details->name; // 'Order 1'
 ```
+
 ## Native Object Support
 
 This package provides native support for the following objects:
@@ -431,7 +434,7 @@ Here's an example:
 use Zerotoprod\ServiceModel\Attributes\CastUsing;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -459,7 +462,7 @@ class TimeClass
 }
 ```
 
-In this exampleWhen the `ServiceModel` trait processes the `time` property of the `MyClass`, it will invoke
+In this exampleWhen the `ServiceModel` trait processes the `time` property of the `MyModel`, it will invoke
 the `set` method of the `TimeClass`, passing the value to be parsed. The method will return a `TimeClass` instance,
 which will then be assigned to the `time` property.
 
@@ -634,7 +637,7 @@ The Attribute values are passed to the constructor of the attribute.
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -647,9 +650,9 @@ class MyClass
 ```
 
 ```php
-$MyClass = MyClass::make(['add_one' => 1, 'add_two' => 1]);
-$MyClass->add_one; // 2
-$MyClass->add_two; // 4
+$MyModel = MyModel::make(['add_one' => 1, 'add_two' => 1]);
+$MyModel->add_one; // 2
+$MyModel->add_two; // 4
 ```
 
 ```php
@@ -800,7 +803,7 @@ The following example shows how to rename a property using the `#[MapFrom]` attr
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -810,8 +813,8 @@ class MyClass
 ```
 
 ```php
-$MyClass = MyClass::make(['MyValue' => 'value']);
-$MyClass->my_value; // 'value'
+$MyModel = MyModel::make(['MyValue' => 'value']);
+$MyModel->my_value; // 'value'
 ```
 
 ### Mapping Nested Properties
@@ -822,7 +825,7 @@ The following example shows how to map a nested property using the `#[MapFrom]` 
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -832,8 +835,61 @@ class MyClass
 ```
 
 ```php
-$MyClass = MyClass::make(['value' => ['nested' => 'value']]);
-$MyClass->value; // 'value'
+$MyModel = MyModel::make(['value' => ['nested' => 'value']]);
+$MyModel->value; // 'value'
+```
+
+## Validation
+
+Sometimes you want to know if required properties are initialized on your model. Validating your model will
+throw the `Zerotoprod\ServiceModel\Exceptions\ValidationException` if required properties are uninitialized.
+
+There are two ways to validate your model.
+
+1. Use the `Strict` trait in your model.
+2. Or validate manually after making your model: `Model::make()->validate()`.
+
+### Using the `Strict` Trait
+
+When the `Strict` trait is used, the `ServiceModel` trait will throw an exception if the model is missing a required
+property.
+
+You can mix and match the Service Models that uses the `Strict` trait. Validation will only be called on the class that
+uses that trait.
+
+```php
+use Zerotoprod\ServiceModel\ServiceModel;
+use Zerotoprod\ServiceModel\Strict;
+
+class MyModel
+{
+    use ServiceModel;
+    use Strict;
+
+    /** 
+     * Throws Zerotoprod\ServiceModel\Exceptions\ValidationException 
+     * if the required properties are not initialized.
+     */ 
+    public readonly string $id;
+    public readonly MyEnum $type;
+    public string $name;
+    
+    /** 
+     * Does not throw an Exception because the property is not required.
+     */ 
+    public readonly ?string $version;
+    public readonly null|string $date;
+    public ?string $time;
+    public null|string $data;
+}
+```
+
+### Manually Validating
+
+You can call the `validate()` method on your model to manually validate your model.
+
+```php
+MyModel::make()->validate()
 ```
 
 ## Lifecycle Hooks
@@ -845,7 +901,7 @@ The `$attributes` parameter is the value passed to the `make()` method.
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
 
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -886,7 +942,7 @@ use Zerotoprod\ServiceModel\Attributes\ToSnakeCase;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 #[MapOutputNames(ToSnakeCase::class)]
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
@@ -895,8 +951,8 @@ class MyClass
 ```
 
 ```php
-$MyClass = MyClass::make(['LastName' => 'Doe']);
-$MyClass->toResource(); // ['last_name' => 'Doe']
+$MyModel = MyModel::make(['LastName' => 'Doe']);
+$MyModel->toResource(); // ['last_name' => 'Doe']
 ```
 
 ### Build Your Own Resource Transformer
@@ -927,7 +983,7 @@ use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 #[MapOutputNames(ToCustomCase::class)]
-class MyClass
+class MyModel
 {
     use ServiceModel;
 
