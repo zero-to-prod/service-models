@@ -12,6 +12,9 @@ class MapFromNestedDto
     #[Describe(['map_from' => 'value.value_nested'])]
     public readonly string $value;
 
+    #[Describe(['map_from' => 'my_value'])]
+    public readonly string $my_value;
+
     #[Describe(['map_from' => 'two.two_nested'])]
     public readonly string $value2;
 

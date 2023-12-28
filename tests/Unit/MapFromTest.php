@@ -28,6 +28,7 @@ test('map from nested', function () {
         'value' => [
             'value_nested' => 'value_nested_value'
         ],
+        'my_value' => 'my_value',
         'two' => [
             'two_nested' => 'two_nested_value'
         ],
@@ -40,6 +41,7 @@ test('map from nested', function () {
     ]);
 
     expect($MapFromDto->value)->toBe('value_nested_value')
+        ->and($MapFromDto->my_value)->toBe('my_value')
         ->and($MapFromDto->value2)->toBe('two_nested_value')
         ->and($MapFromDto->value3)->toBe('three_nested_nested_value')
         ->and($MapFromDto->test)->toBe('test');
