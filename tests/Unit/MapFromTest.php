@@ -4,7 +4,7 @@ use Zerotoprod\AppServiceModel\Tests\Models\MapFromDto;
 use Zerotoprod\AppServiceModel\Tests\Models\MapFromNestedDto;
 
 test('map from', function () {
-    $MapFromDto = MapFromDto::make([
+    $MapFromDto = MapFromDto::from([
         'MyValue' => 'value',
         'value_1' => [
             'value' => 'value2'
@@ -15,13 +15,13 @@ test('map from', function () {
         ->and($MapFromDto->value_2)->toBe('value2');
 });
 test('map from missed', function () {
-    MapFromDto::make([
+    MapFromDto::from([
         'value_3' => 'test'
     ])->my_value;
 })->expectException(TypeError::class);
 
 test('map from nested', function () {
-    $MapFromDto = MapFromNestedDto::make([
+    $MapFromDto = MapFromNestedDto::from([
         'bogus' => [
             'bogus nested' => 'bogus value'
         ],

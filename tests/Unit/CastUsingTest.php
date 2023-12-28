@@ -5,7 +5,7 @@ use Zerotoprod\AppServiceModel\Tests\Models\SpecialCast;
 use Zerotoprod\AppServiceModel\Tests\Models\SpecialCastValues;
 
 test('cast using', function () {
-    $CastUsingClass = CastUsingClass::make([
+    $CastUsingClass = CastUsingClass::from([
         CastUsingClass::value => 'value',
         CastUsingClass::values => [
             'id' => 'id',

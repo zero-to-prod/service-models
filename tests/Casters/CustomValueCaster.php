@@ -14,10 +14,11 @@ class CustomValueCaster implements CanParse
 {
     public function __construct(public readonly int $value_1, public readonly int $value_2)
     {
+
     }
 
-    public function parse(array $values): int
+    public function parse(mixed $value): int
     {
-        return $values[0] + $this->value_1 + $this->value_2;
+        return $value + $this->value_1 + $this->value_2;
     }
 }

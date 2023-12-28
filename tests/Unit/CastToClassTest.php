@@ -5,19 +5,18 @@ use Zerotoprod\AppServiceModel\Tests\Models\CustomCast;
 use Zerotoprod\AppServiceModel\Tests\Models\CustomCastOne;
 use Zerotoprod\AppServiceModel\Tests\Models\MockStringEnum;
 
-test('
-This naming provides a clearer description of what the test is supposed to do. It clarifies the context of the test, the expected behavior, and the conditions that cause the behavior.', function () {
-    expect(CastToClass::make([CastToClass::time => '2021-01-01 00:00:00'])->time)
+test('cast to class', function () {
+    expect(CastToClass::from([CastToClass::time => '2021-01-01 00:00:00'])->time)
         ->toBeInstanceOf(DateTime::class);
 });
 
 test('it can cast to array of DateTime instances', function () {
-    expect(CastToClass::make([CastToClass::times => ['2021-01-01 00:00:00']])->times[0])
+    expect(CastToClass::from([CastToClass::times => ['2021-01-01 00:00:00']])->times[0])
         ->toBeInstanceOf(DateTime::class);
 });
 
 test('it can cast to multiple CustomCast instances', function () {
-    $CustomCast = CastToClass::make([CastToClass::custom_classes => [
+    $CustomCast = CastToClass::from([CastToClass::custom_classes => [
         [
             'name' => 'name',
             'value' => '2021-01-01 00:00:00'
@@ -30,7 +29,7 @@ test('it can cast to multiple CustomCast instances', function () {
 });
 
 test('it can cast to one CustomCastOne instance', function () {
-    $CustomCast = CastToClass::make([CastToClass::custom_classes_1 => [
+    $CustomCast = CastToClass::from([CastToClass::custom_classes_1 => [
         [
             'name' => 'name',
         ]
@@ -41,7 +40,7 @@ test('it can cast to one CustomCastOne instance', function () {
 });
 
 test('it can cast to a single CustomCast instance', function () {
-    $CustomCast = CastToClass::make([CastToClass::custom_class => [
+    $CustomCast = CastToClass::from([CastToClass::custom_class => [
         'name' => 'name',
         'value' => '2021-01-01 00:00:00'
     ]])->custom_class;
@@ -52,7 +51,7 @@ test('it can cast to a single CustomCast instance', function () {
 });
 
 test('it can cast to CustomCastOne instance with one argument', function () {
-    $CustomCastOne = CastToClass::make([CastToClass::custom_class_1 => [
+    $CustomCastOne = CastToClass::from([CastToClass::custom_class_1 => [
         'name' => 'name',
     ]])->custom_class_1;
 
@@ -61,7 +60,7 @@ test('it can cast to CustomCastOne instance with one argument', function () {
 });
 
 test('it can cast to an array of MockStringEnum instances', function () {
-    $enums = CastToClass::make([CastToClass::enums => [
+    $enums = CastToClass::from([CastToClass::enums => [
         'test',
     ]])->enums;
 
@@ -70,7 +69,7 @@ test('it can cast to an array of MockStringEnum instances', function () {
 });
 
 test('it throws error when casting to array of single enum value', function () {
-    CastToClass::make([CastToClass::enum_value => [
+    CastToClass::from([CastToClass::enum_value => [
         'test',
     ]])->enums;
 })->expectException(Error::class);

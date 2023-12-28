@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class TopLevelCastArrayEnums
@@ -14,6 +14,6 @@ class TopLevelCastArrayEnums
     /**
      * @var MockEnumCast[] $children
      */
-    #[CastToArray(MockEnumCast::class)]
+    #[Describe(['from' => MockEnumCast::class])]
     public array $children;
 }

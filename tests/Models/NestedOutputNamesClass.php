@@ -2,11 +2,11 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
-use Zerotoprod\ServiceModel\Attributes\ToSnakeCase;
+use Zerotoprod\ServiceModel\Attributes\DescribeModel;
+use Zerotoprod\ServiceModel\Attributes\SnakeCase;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-#[MapOutputNames(ToSnakeCase::class)]
+#[DescribeModel(['output_as' => SnakeCase::class])]
 class NestedOutputNamesClass
 {
     use ServiceModel;

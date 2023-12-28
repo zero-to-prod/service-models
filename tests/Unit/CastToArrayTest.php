@@ -6,7 +6,7 @@ use Zerotoprod\AppServiceModel\Tests\Models\TopLevelCastArray;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevelCastArrayEnums;
 
 test('top level cast', function () {
-    $TopLevelCastArray = TopLevelCastArray::make([
+    $TopLevelCastArray = TopLevelCastArray::from([
         TopLevelCastArray::children => [
             [Child::name => 'name'],
             [Child::name => 'name'],
@@ -18,9 +18,9 @@ test('top level cast', function () {
         ->and($TopLevelCastArray->children[0])->toBeInstanceOf(Child::class);
 });
 test('top level cast with service model', function () {
-    $TopLevelCastArray = TopLevelCastArray::make([
+    $TopLevelCastArray = TopLevelCastArray::from([
         TopLevelCastArray::children => [
-            Child::make([Child::name => 'name']),
+            Child::from([Child::name => 'name']),
             [Child::name => 'name'],
         ]
     ]);
@@ -30,7 +30,7 @@ test('top level cast with service model', function () {
         ->and($TopLevelCastArray->children[0])->toBeInstanceOf(Child::class);
 });
 test('top level cast to enums values', function () {
-    $TopLevelCastArrayEnums = TopLevelCastArrayEnums::make([
+    $TopLevelCastArrayEnums = TopLevelCastArrayEnums::from([
         TopLevelCastArrayEnums::children => [
             MockEnumCast::first->value,
             MockEnumCast::second,

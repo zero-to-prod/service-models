@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class ToResource
@@ -17,7 +17,7 @@ class ToResource
     public readonly string $Name;
     public readonly string $LastName;
     public readonly NestedOutputNamesClass $NestedOutputNamesClass;
-    #[CastToArray(NestedOutputNamesClass::class)]
+    #[Describe(['from' => NestedOutputNamesClass::class])]
     public readonly array $ArrayNestedOutputNamesClass;
     public readonly MockEnumCast $Enum;
 }

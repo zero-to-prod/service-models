@@ -3,7 +3,7 @@
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
 use Zerotoprod\AppServiceModel\Tests\Casters\AddOne;
-use Zerotoprod\ServiceModel\Attributes\Cast;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class ValueCast
@@ -11,6 +11,6 @@ class ValueCast
     use ServiceModel;
 
     public const value = 'value';
-    #[Cast(AddOne::class)]
+    #[Describe(['from' => AddOne::class])]
     public int $value;
 }

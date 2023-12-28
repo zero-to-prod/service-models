@@ -42,7 +42,7 @@ test('smoke test', function () {
         ],
         Order::created_at => '2021-01-01 00:00:00',
         Order::items => [
-            Item::make([
+            Item::from([
                 Item::id => 1,
                 Item::name => 'Item 1'
             ]),
@@ -63,7 +63,7 @@ test('smoke test', function () {
         ]
     ];
 
-    $Order = Order::make($items);
+    $Order = Order::from($items);
 
     expect($Order->details)->toBeInstanceOf(OrderDetails::class)
         ->and($Order->details->id)->toBe(1)
@@ -73,6 +73,7 @@ test('smoke test', function () {
         ->and($Order->time)->toBeInstanceOf(TimeClass::class)
         ->and($Order->time->value)->toBe('2021-01-01 00:00:00')
         ->and($Order->acknowledged_at)->toBe('2021-01-01 00:00:00')
+        ->and($Order->serial_number)->toBe('1234567890')
         ->and($Order->status->value)->toBe('pending')
         ->and($Order->statuses[0])->toBeInstanceOf(Status::class)
         ->and($Order->statuses[0]->value)->toBe('pending')

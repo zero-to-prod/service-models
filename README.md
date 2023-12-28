@@ -95,7 +95,6 @@ Define properties in your class to match the keys of your data.
 The `ServiceModel` trait will automatically match the keys, detect the type, and cast the value.
 
 ```php
-use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastUsing;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ArrayOf;
@@ -937,11 +936,10 @@ You can do this by adding the `#[MapOutputNames(ToSnakeCase::class)]` attribute 
 the `toResource()` method.
 
 ```php
-use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
-use Zerotoprod\ServiceModel\Attributes\ToSnakeCase;
+use Zerotoprod\ServiceModel\Attributes\SnakeCase;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-#[MapOutputNames(ToSnakeCase::class)]
+#[MapOutputNames(SnakeCase::class)]
 class MyModel
 {
     use ServiceModel;
@@ -979,7 +977,6 @@ class ToCustomCase implements CanParse
 You can add this to the top of your model like this:
 
 ```php
-use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 #[MapOutputNames(ToCustomCase::class)]
@@ -1023,9 +1020,7 @@ use Zerotoprod\ServiceModel\CanCast;
 **After:**
 
 ```php
-use Zerotoprod\ServiceModel\Attributes\Cast;
 use Zerotoprod\ServiceModel\Attributes\CastToArray;
-use Zerotoprod\ServiceModel\Attributes\CastToClasses;
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 ```
 

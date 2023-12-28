@@ -70,8 +70,8 @@ class Factory
     {
         $model = $this->model;
 
-        if (method_exists($model, 'make')) {
-            return $model::make($attributes);
+        if (method_exists($model, 'from')) {
+            return $model::from($attributes);
         }
 
         return new $model($attributes);

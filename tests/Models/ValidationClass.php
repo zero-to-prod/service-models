@@ -2,8 +2,10 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
+use Zerotoprod\ServiceModel\Attributes\DescribeModel;
 use Zerotoprod\ServiceModel\ServiceModel;
 
+#[DescribeModel(['strict' => true])]
 class ValidationClass
 {
     use ServiceModel;

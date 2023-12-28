@@ -1,17 +1,22 @@
-<?php /** @noinspection PhpUndefinedFunctionInspection */
+<?php
+
+/**
+ * @noinspection PhpUndefinedMethodInspection
+ * @noinspection PhpUndefinedFunctionInspection
+ */
 
 namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
-use Zerotoprod\ServiceModel\Attributes\CastUsing;
+use Zerotoprod\ServiceModel\Attributes\Describe;
+use Zerotoprod\ServiceModel\Attributes\DescribeModel;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ToArray;
-use Zerotoprod\ServiceModel\Cache\Cache;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
 trait ServiceModel
 {
-    public static function make($items = null): self
+    public static function from($items = null): self
     {
         if (is_string($items)) {
             $decoded = json_decode($items, true);
@@ -19,136 +24,113 @@ trait ServiceModel
                 $items = $decoded;
             }
         }
-
         $self = new self;
+        $ReflectionClass = new ReflectionClass($self);
+        $items = (array)$items;
 
-        $Cache = Cache::getInstance();
-        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
-        $using_strict = in_array(Strict::class, $ReflectionClass->getTraitNames(), true);
-
-        if (!$items || !(is_array($items) || is_object($items))) {
-            if ($using_strict) {
-                $self->validate();
-            }
-
-            return $self;
-        }
-
-        foreach ($items as $key => $value) {
-            $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
-            $classnames = $Cache->remember(static::class . '::classnames', function () use ($Properties) {
-                $classnames = [];
-                foreach ($Properties as $Property) {
-                    $attributes = $Property->getAttributes();
-                    if (empty($attributes)) {
-                        continue;
-                    }
-                    $classnames[] = $attributes[0]->getName();
+        foreach ($ReflectionClass->getProperties() as $ReflectionProperty) {
+            $Describe = new Describe;
+            foreach ($ReflectionProperty->getAttributes() as $ReflectionAttribute) {
+                if ($ReflectionAttribute->getName() === Describe::class) {
+                    $Describe = new Describe(...$ReflectionAttribute->getArguments());
                 }
-
-                return $classnames;
-            });
-
-            if (in_array(MapFrom::class, $classnames, true)) {
-                foreach ($Properties as $Property) {
-                    $attributes = $Property->getAttributes();
-
-                    if (empty($attributes)) {
-                        continue;
-                    }
-
-                    $classname = $attributes[0]->getName();
-                    if ($classname === MapFrom::class) {
-                        $map = $attributes[0]->getArguments()[0];
-                        if ($key === $map || (strpos($map, '.') && is_array($value) && $key)) {
-                            $property_value = (new $classname($map))->parse((array)$value);
-                            if ($property_value) {
-                                $self->{$Property->getName()} = $property_value;
-                                continue 2;
+            }
+            $property_name = $ReflectionProperty->getName();
+            if (isset($items[$property_name])) {
+                $model_classname = $ReflectionProperty->getType()?->getName() ?? 'string';
+                if (class_exists($Describe->from) || class_exists($model_classname)) {
+                    if ($model_classname === 'array') {
+                        $values = [];
+                        foreach ($items[$property_name] as $item) {
+                            if (isset($item->value) || method_exists($Describe->from, 'from')) {
+                                $values[] = isset($item->value)
+                                    ? $item // enum
+                                    : $Describe->from::from($item);
+                                continue;
                             }
+                            $values[] = is_array($item)
+                                ? new $Describe->from(...$item)
+                                : new $Describe->from($item);
                         }
+                        $self->{$property_name} = $values;
+                        continue;
                     }
+
+                    if ($Describe->from && method_exists($Describe->from, 'parse')) {
+                        $self->{$property_name} = (new $Describe->from)->parse($items[$property_name]);
+                        continue;
+                    }
+
+                    if (!is_object($items[$property_name])) {
+                        if ($Describe->via) {
+                            $self->{$property_name} = is_array($items[$property_name])
+                                ? $model_classname::{$Describe->via}(...$items[$property_name])
+                                : $model_classname::{$Describe->via}($items[$property_name]);
+                            continue;
+                        }
+                        if (enum_exists($model_classname)) {
+                            $self->{$property_name} = $model_classname::from($items[$property_name]);
+                            continue;
+                        }
+                        if (method_exists($model_classname, 'from')) {
+                            $self->{$property_name} = $model_classname::from($items[$property_name]);
+                            continue;
+                        }
+                        $self->{$property_name} = is_array($items[$property_name])
+                            ? new $model_classname(...$items[$property_name])
+                            : new $model_classname($items[$property_name]);
+                        continue;
+                    }
+                    $self->{$property_name} = $items[$property_name];
+                    continue;
                 }
+
+                if ($ReflectionProperty->getAttributes()) {
+                    foreach ($ReflectionProperty->getAttributes() as $ReflectionAttribute) {
+                        if ($Describe->map_from) {
+                            $key = explode('.', $Describe->map_from);
+                            if (is_array($key) && strpos($Describe->map_from, '.')) {
+                                $property_value = (new MapFrom($Describe->map_from))->parse($items[$key[0]]);
+                                if ($property_value) {
+                                    $self->{$property_name} = $property_value;
+                                }
+                                continue;
+                            }
+                            $self->{$property_name} = $items[$Describe->map_from];
+                            continue;
+                        }
+
+                        $classname = $ReflectionAttribute->getName();
+                        $self->{$property_name} = count($ReflectionAttribute->getArguments()) > 1
+                            ? (new $classname(...$ReflectionAttribute->getArguments()))->parse($items[$property_name])
+                            : (new $classname($ReflectionAttribute->getArguments()[0]))->parse($items[$property_name]);
+                    }
+                    continue;
+                }
+                $self->{$property_name} = $items[$property_name];
             }
 
-            if (!$ReflectionClass->hasProperty($key)) {
+            $attributes = $ReflectionProperty->getAttributes();
+
+            if (empty($attributes)) {
                 continue;
             }
 
-            $cache_key = static::class . '::' . $key;
-            $ReflectionProperty = $Cache->remember($cache_key, fn() => $ReflectionClass->getProperty($key));
-            $model_classname = $Cache->remember($cache_key . '::type',
-                fn() => $ReflectionProperty->getType()?->getName() ?? 'string'
-            );
-            $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
-
-            if (!$ReflectionAttribute) {
-
-                // ServiceModels
-                if (method_exists($model_classname, 'make')) {
-                    $self->{$key} = $model_classname::make($value);
+            if ($Describe->map_from) {
+                $key = explode('.', $Describe->map_from);
+                if (is_array($key) && strpos($Describe->map_from, '.')) {
+                    $property_value = (new MapFrom($Describe->map_from))->parse($items[$key[0]]);
+                    if ($property_value) {
+                        $self->{$property_name} = $property_value;
+                    }
                     continue;
                 }
-
-                // Enums
-                if (isset($value->value)) {
-                    $self->{$key} = $model_classname::tryFrom($value->value);
-                    continue;
-                }
-
-                // Enum values
-                if ($Cache->remember($model_classname . '::enum',
-                    fn() => enum_exists($model_classname))
-                ) {
-                    $self->{$key} = $model_classname::tryFrom($value);
-                    continue;
-                }
-
-                // Classes
-                if ($Cache->remember($model_classname . '::class',
-                    fn() => class_exists($model_classname))
-                ) {
-                    $self->{$key} = is_array($value)
-                        ? new $model_classname(...$value)
-                        : new $model_classname($value);
-                    continue;
-                }
-
-                $self->{$key} = $value;
-
-                continue;
+                $self->{$property_name} = $items[$Describe->map_from];
             }
-
-            $attribute_argument_0 = $ReflectionAttribute->getArguments()[0];
-            $attribute_classname = $ReflectionAttribute->getName();
-
-            // Cast to array
-            if ($Cache->remember($attribute_argument_0 . '::cast',
-                fn() => (is_object($attribute_argument_0) || is_string($attribute_argument_0))
-                    && method_exists($attribute_argument_0, 'make'))
-            ) {
-                $trait_names = (new ReflectionClass($attribute_argument_0))->getTraitNames();
-                if (in_array(ServiceModel::class, $trait_names, true)) {
-                    $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
-                    continue;
-                }
-            }
-
-            $self->{$key} = match ($attribute_classname) {
-                CastUsing::class => is_array($value)
-                    ? $model_classname::$attribute_argument_0(...$value)
-                    : $model_classname::$attribute_argument_0($value),
-                default => count($ReflectionAttribute->getArguments()) > 1
-                    ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
-                    : (new $attribute_classname($attribute_argument_0))->parse((array)$value),
-            };
         }
 
+        $self->validate();
         $self->afterMake($items);
-
-        if ($using_strict) {
-            $self->validate();
-        }
 
         return $self;
     }
@@ -161,27 +143,43 @@ trait ServiceModel
     public function toResource(): array
     {
         $ReflectionClass = new ReflectionClass($this);
-
-        if (!$ReflectionClass->getAttributes()[0]) {
-            return (new ToArray)->parse((array)$this);
+        $DescribeModel = new DescribeModel;
+        if (count($ReflectionClass->getAttributes())) {
+            foreach ($ReflectionClass->getAttributes() as $RefAttribute) {
+                if ($RefAttribute->getName() === DescribeModel::class) {
+                    $classname = $RefAttribute->getName();
+                    $DescribeModel = new $classname(...$RefAttribute->getArguments());
+                }
+            }
+        }
+        if ($DescribeModel->output_as) {
+            $classname = $DescribeModel->output_as;
+            return (new $classname)->parse((array)$this);
         }
 
-        $classname = $ReflectionClass->getAttributes()[0]->getArguments()[0];
-
-        return (new $classname)->parse((array)$this);
+        return (new ToArray)->parse((array)$this);
     }
 
     public function validate(): self
     {
-        $Cache = Cache::getInstance();
-        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($this));
+        $ReflectionClass = new ReflectionClass($this);
+        $DescribeModel = new DescribeModel;
+        if (count($ReflectionClass->getAttributes())) {
+            foreach ($ReflectionClass->getAttributes() as $RefAttribute) {
+                if ($RefAttribute->getName() === DescribeModel::class) {
+                    $classname = $RefAttribute->getName();
+                    $DescribeModel = new $classname(...$RefAttribute->getArguments());
+                }
+            }
+        }
 
         foreach ($ReflectionClass->getProperties() as $Property) {
-            if (!$Property->getType()->allowsNull()) {
-                $name = $Property->getName();
-                if (!isset($this->{$name})) {
-                    throw new ValidationException("Property $name is not set");
-                }
+            $name = $Property->getName();
+            if ($DescribeModel->strict && !isset($this->{$name}) && !$Property->getType()->allowsNull()) {
+                throw new ValidationException("Property $name is not set");
+            }
+            if ($DescribeModel->require_typed_properties && $Property->getType() === null) {
+                throw new ValidationException("Property $name must have a type.");
             }
         }
 

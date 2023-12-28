@@ -2,20 +2,20 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class MapFromNestedDto
 {
     use ServiceModel;
 
-    #[MapFrom('value.value_nested')]
+    #[Describe(['map_from' => 'value.value_nested'])]
     public readonly string $value;
 
-    #[MapFrom('two.two_nested')]
+    #[Describe(['map_from' => 'two.two_nested'])]
     public readonly string $value2;
 
-    #[MapFrom('three.three_nested.three_nested_nested')]
+    #[Describe(['map_from' => 'three.three_nested.three_nested_nested'])]
     public readonly string $value3;
 
     public readonly string $test;

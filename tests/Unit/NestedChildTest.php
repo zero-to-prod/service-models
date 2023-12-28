@@ -4,7 +4,7 @@ use Zerotoprod\AppServiceModel\Tests\Models\Child;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevel;
 
 test('accesses child service model', function () {
-    $TopLevel = TopLevel::make([
+    $TopLevel = TopLevel::from([
         TopLevel::child => [
             Child::name => 'name'
         ]

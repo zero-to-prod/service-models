@@ -1,9 +1,8 @@
 <?php
 
-use Zerotoprod\AppServiceModel\Tests\Models\MapFromDto;
+use Zerotoprod\AppServiceModel\Tests\Models\AfterMakeClass;
 
-test('map from', function () {
-    $MapFromDto = MapFromDto::make(['MyValue' => 'value']);
-
-    expect($MapFromDto->value_4)->toBe('value');
+test('after make', function () {
+    expect(AfterMakeClass::from(['MyValue' => 'value'])->value_4)
+        ->toBe('value');
 });

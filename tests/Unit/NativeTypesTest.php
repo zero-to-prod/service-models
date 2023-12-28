@@ -3,7 +3,7 @@
 use Zerotoprod\AppServiceModel\Tests\Models\NativeTypes;
 
 test('native types', function () {
-    $NativeTypes = NativeTypes::make([
+    $NativeTypes = NativeTypes::from([
         NativeTypes::int => 1,
         NativeTypes::float => 1.1,
         NativeTypes::string => 'string',

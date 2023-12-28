@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\CastToArray;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class TopLevelCastArray
@@ -14,6 +14,6 @@ class TopLevelCastArray
     /**
      * @var Child[] $children
      */
-    #[CastToArray(Child::class)]
-    public array $children;
+    #[Describe(['from' => Child::class])]
+    public readonly array $children;
 }

@@ -7,10 +7,11 @@ use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 class ToChild implements CanParse
 {
-    public function parse(array $values): ChildWithoutTrait
+    public function parse(mixed $value): ChildWithoutTrait
     {
+        $value = (array)$value;
         $child = new ChildWithoutTrait;
-        $child->name = $values['name'];
+        $child->name = $value['name'];
 
         return $child;
     }
