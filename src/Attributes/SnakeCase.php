@@ -7,22 +7,23 @@ use UnitEnum;
 use Zerotoprod\ServiceModel\Contracts\CanParse;
 
 #[Attribute]
-class ToSnakeCase implements CanParse
+class SnakeCase implements CanParse
 {
-    public function parse(array $values): array
+    public function parse(mixed $value): array
     {
         $result = [];
-        foreach ($values as $key => $value) {
+        $items = $value;
+        foreach ($items as $key => $item) {
             $snakeKey = $this->snake($key);
-            if ($value instanceof UnitEnum) {
-                $value = $value->value;
-            } elseif (is_object($value)) {
-                $value = get_object_vars($value);
+            if ($item instanceof UnitEnum) {
+                $item = $item->value;
+            } elseif (is_object($item)) {
+                $item = get_object_vars($item);
             }
-            if (is_array($value)) {
-                $result[$snakeKey] = $this->parse($value);
+            if (is_array($item)) {
+                $result[$snakeKey] = $this->parse($item);
             } else {
-                $result[$snakeKey] = $value;
+                $result[$snakeKey] = $item;
             }
         }
         return $result;

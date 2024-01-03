@@ -2,13 +2,13 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
-use Zerotoprod\ServiceModel\Strict;
 
+#[Describe(['strict' => true])]
 class StrictClass
 {
     use ServiceModel;
-    use Strict;
 
     public const ro_required = 'ro_required';
     public const enum_required = 'enum_required';

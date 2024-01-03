@@ -3,7 +3,7 @@
 use Zerotoprod\AppServiceModel\Tests\Models\OptionalValues;
 
 test('optional values', function () {
-    $Mock = OptionalValues::make();
+    $Mock = OptionalValues::from();
 
     expect($Mock->int)->toBeNull()
         ->and($Mock->float)->toBeNull()

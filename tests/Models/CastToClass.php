@@ -3,7 +3,7 @@
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
 use DateTime;
-use Zerotoprod\ServiceModel\Attributes\CastToClasses;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class CastToClass
@@ -19,16 +19,15 @@ class CastToClass
     public const custom_class = 'custom_class';
     public const custom_class_1 = 'custom_class_1';
     public readonly DateTime $time;
-    #[CastToClasses(MockStringEnum::class)]
+    #[Describe(['from' => MockStringEnum::class])]
     public readonly array $enums;
-
-    #[CastToClasses(MockEnum::class)]
-    public readonly array $enum_value;
-    #[CastToClasses(DateTime::class)]
+    #[Describe(['from' => DateTime::class])]
     public readonly array $times;
-    #[CastToClasses(CustomCast::class)]
+    #[Describe(['from' => MockEnum::class])]
+    public readonly array $enum_value;
+    #[Describe(['from' => CustomCast::class])]
     public readonly array $custom_classes;
-    #[CastToClasses(CustomCastOne::class)]
+    #[Describe(['from' => CustomCastOne::class])]
     public readonly array $custom_classes_1;
     public readonly CustomCast $custom_class;
     public readonly CustomCastOne $custom_class_1;

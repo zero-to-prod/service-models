@@ -6,7 +6,7 @@ use Zerotoprod\AppServiceModel\Tests\Models\NestedOutputNamesClass;
 use Zerotoprod\AppServiceModel\Tests\Models\ToResource;
 
 test('snake case', function () {
-    $MapOutputNamesClass = MapOutputNamesClass::make([
+    $MapOutputNamesClass = MapOutputNamesClass::from([
         MapOutputNamesClass::Name => 'Name',
         MapOutputNamesClass::LastName => 'LastName',
         MapOutputNamesClass::NestedOutputNamesClass => [
@@ -30,7 +30,7 @@ test('snake case', function () {
 });
 
 test('to resource', function () {
-    $ToResource = ToResource::make([
+    $ToResource = ToResource::from([
         MapOutputNamesClass::Name => 'Name',
         MapOutputNamesClass::LastName => 'LastName',
         MapOutputNamesClass::NestedOutputNamesClass => [

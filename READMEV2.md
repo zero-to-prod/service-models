@@ -859,10 +859,12 @@ uses that trait.
 
 ```php
 use Zerotoprod\ServiceModel\ServiceModel;
+use Zerotoprod\ServiceModel\Strict;
 
 class MyModel
 {
     use ServiceModel;
+    use Strict;
 
     /** 
      * Throws Zerotoprod\ServiceModel\Exceptions\ValidationException 

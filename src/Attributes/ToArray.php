@@ -9,21 +9,23 @@ use Zerotoprod\ServiceModel\Contracts\CanParse;
 #[Attribute]
 class ToArray implements CanParse
 {
-    public function parse(array $values): array
+    public function parse(mixed $value): array
     {
         $result = [];
-        foreach ($values as $key => $value) {
-            if ($value instanceof UnitEnum) {
-                $value = $value->value;
-            } elseif (is_object($value)) {
-                $value = get_object_vars($value);
+        $items = $value;
+        foreach ($items as $key => $item) {
+            if ($item instanceof UnitEnum) {
+                $item = $item->value;
+            } elseif (is_object($item)) {
+                $item = get_object_vars($item);
             }
-            if (is_array($value)) {
-                $result[$key] = $this->parse($value);
+            if (is_array($item)) {
+                $result[$key] = $this->parse($item);
             } else {
-                $result[$key] = $value;
+                $result[$key] = $item;
             }
         }
+
         return $result;
     }
 }

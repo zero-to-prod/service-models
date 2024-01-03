@@ -16,11 +16,11 @@ class MapFrom implements CanParse
     {
     }
 
-    public function parse(array $values): mixed
+    public function parse(mixed $value): mixed
     {
         return strpos($this->map, '.')
-            ? $this->valueByPath($values, $this->map)
-            : $values[0];
+            ? $this->valueByPath($value, $this->map)
+            : $value[0];
     }
 
     public function valueByPath(array $array, string $map): array|string|null

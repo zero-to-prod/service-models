@@ -16,8 +16,8 @@ class CustomCaster implements CanParse
     {
     }
 
-    public function parse(array $values): int
+    public function parse(mixed $value): int
     {
-        return $values[0] + $this->attribute_constructor_value;
+        return $value + $this->attribute_constructor_value;
     }
 }

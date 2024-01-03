@@ -1,37 +1,42 @@
 <?php
 
 use Zerotoprod\AppServiceModel\Tests\Models\Child;
+use Zerotoprod\AppServiceModel\Tests\Models\StrictChild;
 use Zerotoprod\AppServiceModel\Tests\Models\ValidationClass;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
 test('validates', function () {
-    ValidationClass::make()->validate();
+    ValidationClass::from()->validate();
 })->throws(ValidationException::class);
 test('validates multiple', function () {
-    ValidationClass::make([
+    ValidationClass::from([
         ValidationClass::required => 'value',
     ])->validate();
 })->throws(ValidationException::class);
 test('validates child', function () {
-    ValidationClass::make([
+    ValidationClass::from([
         ValidationClass::required => 'value',
         ValidationClass::ro_required => 'value',
+        ValidationClass::strict_child => [
+            'a' => 1,
+        ],
     ])->validate();
 })->throws(ValidationException::class);
 test('does not validate child recursive', function () {
-    ValidationClass::make([
+    ValidationClass::from([
         ValidationClass::required => 'value',
         ValidationClass::ro_required => 'value',
         ValidationClass::child => [
             Child::id => 1,
         ],
         ValidationClass::strict_child => [
-            Child::id => 1,
+            StrictChild::id => 1,
+            StrictChild::name => 'name',
         ],
     ])->validate();
-})->throws(ValidationException::class);
+})->throwsNoExceptions();
 test('validate child recursive', function () {
-    ValidationClass::make([
+    ValidationClass::from([
         ValidationClass::required => 'value',
         ValidationClass::ro_required => 'value',
         ValidationClass::child => [
@@ -40,7 +45,7 @@ test('validate child recursive', function () {
     ])->validate();
 })->throws(ValidationException::class);
 test('passes', function () {
-    ValidationClass::make([
+    ValidationClass::from([
         ValidationClass::required => 'value',
         ValidationClass::ro_required => 'value',
         ValidationClass::child => [

@@ -27,7 +27,10 @@
     "autoload": {
         "psr-4": {
             "Zerotoprod\\ServiceModel\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

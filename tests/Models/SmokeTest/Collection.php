@@ -5,13 +5,15 @@ namespace Zerotoprod\AppServiceModel\Tests\Models\SmokeTest;
 class Collection
 {
     public const items = 'items';
+    public readonly array $items;
 
-    public function __construct(public readonly array $items)
+    public function __construct(...$items)
     {
+        $this->items = $items;
     }
 
-    public function first()
+    public function first(): View
     {
-        return $this->items[0];
+        return View::from($this->items[0]);
     }
 }

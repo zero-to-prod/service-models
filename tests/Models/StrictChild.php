@@ -2,13 +2,13 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
-use Zerotoprod\ServiceModel\Strict;
 
+#[Describe(['strict' => true])]
 class StrictChild
 {
     use ServiceModel;
-    use Strict;
 
     public const name = 'name';
     public const id = 'id';

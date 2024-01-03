@@ -2,10 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models\SmokeTest;
 
-use Zerotoprod\ServiceModel\Attributes\ArrayOf;
-use Zerotoprod\ServiceModel\Attributes\Cast;
-use Zerotoprod\ServiceModel\Attributes\CastUsing;
-use Zerotoprod\ServiceModel\Attributes\MapFrom;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class Order
@@ -25,22 +22,22 @@ class Order
     public const items = 'items';
     public const views = 'views';
     public readonly OrderDetails $details;
-    #[Cast(ToJson::class)]
+    #[Describe(['from' => ToJson::class])]
     public readonly string $metadata;
 
-    #[CastUsing('set')]
+    #[Describe(['via' => 'set'])]
     public readonly TimeClass $time;
 
-    #[MapFrom('AcknowledgedAt')]
+    #[Describe(['map_from' => 'AcknowledgedAt'])]
     public readonly string $acknowledged_at;
 
-    #[MapFrom('vendor_details.serial_number')]
+    #[Describe(['map_from' => 'vendor_details.serial_number'])]
     public readonly string $serial_number;
 
     public readonly Status $status;
 
     /* @var Status[] $statuses */
-    #[ArrayOf(Status::class)]
+    #[Describe(['from' => Status::class])]
     public array $statuses;
 
     /**
@@ -54,7 +51,7 @@ class Order
      *
      * @var PickupInfo[] $pickups
      */
-    #[ArrayOf(PickupInfo::class)]
+    #[Describe(['from' => PickupInfo::class])]
     public readonly array $previous_pickups;
 
     /**
@@ -67,13 +64,12 @@ class Order
      * Creates an array of Items.
      * @var Item[] $items
      */
-    #[ArrayOf(Item::class)]
+    #[Describe(['from' => Item::class])]
     public readonly array $items;
 
     /**
      * Use a custom cast.
      * @var Collection<int, View> $views
      */
-    #[CollectionOf(View::class)]
     public readonly Collection $views;
 }

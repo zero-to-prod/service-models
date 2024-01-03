@@ -2,7 +2,7 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\CastUsing;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
 class CastUsingClass
@@ -13,9 +13,9 @@ class CastUsingClass
     public const values = 'values';
     public const time = 'time';
 
-    #[CastUsing('set')]
+    #[Describe(['via' => 'set'])]
     public SpecialCast $value;
-    #[CastUsing('set')]
+    #[Describe(['via' => 'set'])]
     public SpecialCastValues $values;
     public TimeClass $time;
 }

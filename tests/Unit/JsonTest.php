@@ -10,11 +10,11 @@ test('json', function () {
         ]
     ];
 
-    $TopLevel = TopLevel::make(json_encode($data));
+    $TopLevel = TopLevel::from(json_encode($data));
 
     expect($TopLevel->child->name)->toBe('value');
 });
 
 test('invalid json', function () {
-    expect(empty(TopLevel::make('name')->child->name))->toBeTrue();
+    expect(empty(TopLevel::from('name')->child->name))->toBeTrue();
 });

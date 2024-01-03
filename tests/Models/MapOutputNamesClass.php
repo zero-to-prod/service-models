@@ -2,12 +2,11 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\CastToArray;
-use Zerotoprod\ServiceModel\Attributes\MapOutputNames;
-use Zerotoprod\ServiceModel\Attributes\ToSnakeCase;
+use Zerotoprod\ServiceModel\Attributes\Describe;
+use Zerotoprod\ServiceModel\Attributes\SnakeCase;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-#[MapOutputNames(ToSnakeCase::class)]
+#[Describe(['output_as' => SnakeCase::class])]
 class MapOutputNamesClass
 {
     use ServiceModel;
@@ -20,7 +19,7 @@ class MapOutputNamesClass
     public readonly string $Name;
     public readonly string $LastName;
     public readonly NestedOutputNamesClass $NestedOutputNamesClass;
-    #[CastToArray(NestedOutputNamesClass::class)]
+    #[Describe(['from' => NestedOutputNamesClass::class])]
     public readonly array $ArrayNestedOutputNamesClass;
     public readonly MockEnumCast $Enum;
 }
