@@ -9,8 +9,6 @@ namespace Zerotoprod\ServiceModel;
 
 use ReflectionClass;
 use Zerotoprod\ServiceModel\Attributes\Describe;
-use Zerotoprod\ServiceModel\Attributes\DescribeModel;
-use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ToArray;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
@@ -26,15 +24,11 @@ trait ServiceModel
         }
         $self = new self;
         $ReflectionClass = new ReflectionClass($self);
+        $DescribeModel = ztp_get_Describe($ReflectionClass->getAttributes());
         $items = (array)$items;
 
         foreach ($ReflectionClass->getProperties() as $ReflectionProperty) {
-            $Describe = new Describe;
-            foreach ($ReflectionProperty->getAttributes() as $ReflectionAttribute) {
-                if ($ReflectionAttribute->getName() === Describe::class) {
-                    $Describe = new Describe(...$ReflectionAttribute->getArguments());
-                }
-            }
+            $Describe = ztp_merge_Describe($DescribeModel, ztp_get_Describe($ReflectionProperty->getAttributes()));
             $property_name = $ReflectionProperty->getName();
             if (isset($items[$property_name])) {
                 $model_classname = $ReflectionProperty->getType()?->getName() ?? 'string';
@@ -88,12 +82,9 @@ trait ServiceModel
                 if ($ReflectionProperty->getAttributes()) {
                     foreach ($ReflectionProperty->getAttributes() as $ReflectionAttribute) {
                         if ($Describe->map_from) {
-                            $key = explode('.', $Describe->map_from);
-                            if (is_array($key) && strpos($Describe->map_from, '.')) {
-                                $property_value = (new MapFrom($Describe->map_from))->parse($items[$key[0]]);
-                                if ($property_value) {
-                                    $self->{$property_name} = $property_value;
-                                }
+                            $property_value = ztp_map_from($Describe, $items);
+                            if ($property_value) {
+                                $self->{$property_name} = $property_value;
                                 continue;
                             }
                             $self->{$property_name} = $items[$Describe->map_from];
@@ -101,9 +92,13 @@ trait ServiceModel
                         }
 
                         $classname = $ReflectionAttribute->getName();
-                        $self->{$property_name} = count($ReflectionAttribute->getArguments()) > 1
-                            ? (new $classname(...$ReflectionAttribute->getArguments()))->parse($items[$property_name])
-                            : (new $classname($ReflectionAttribute->getArguments()[0]))->parse($items[$property_name]);
+                        if (method_exists($classname, 'parse')) {
+                            $self->{$property_name} = count($ReflectionAttribute->getArguments()) > 1
+                                ? (new $classname(...$ReflectionAttribute->getArguments()))->parse($items[$property_name])
+                                : (new $classname($ReflectionAttribute->getArguments()[0]))->parse($items[$property_name]);
+                            continue;
+                        }
+                        $self->{$property_name} = $items[$property_name];
                     }
                     continue;
                 }
@@ -117,19 +112,18 @@ trait ServiceModel
             }
 
             if ($Describe->map_from) {
-                $key = explode('.', $Describe->map_from);
-                if (is_array($key) && strpos($Describe->map_from, '.')) {
-                    $property_value = (new MapFrom($Describe->map_from))->parse($items[$key[0]]);
-                    if ($property_value) {
-                        $self->{$property_name} = $property_value;
-                    }
+                $property_value = ztp_map_from($Describe, $items);
+                if ($property_value) {
+                    $self->{$property_name} = $property_value;
                     continue;
                 }
                 $self->{$property_name} = $items[$Describe->map_from];
             }
         }
-
-        $self->validate();
+        $Describe = ztp_get_Describe($ReflectionClass->getAttributes()) ?? new Describe;
+        if ($Describe->require_typed_properties || $Describe->strict) {
+            $self->validate();
+        }
         $self->afterMake($items);
 
         return $self;
@@ -143,17 +137,9 @@ trait ServiceModel
     public function toResource(): array
     {
         $ReflectionClass = new ReflectionClass($this);
-        $DescribeModel = new DescribeModel;
-        if (count($ReflectionClass->getAttributes())) {
-            foreach ($ReflectionClass->getAttributes() as $RefAttribute) {
-                if ($RefAttribute->getName() === DescribeModel::class) {
-                    $classname = $RefAttribute->getName();
-                    $DescribeModel = new $classname(...$RefAttribute->getArguments());
-                }
-            }
-        }
-        if ($DescribeModel->output_as) {
-            $classname = $DescribeModel->output_as;
+        $Describe = ztp_get_Describe($ReflectionClass->getAttributes()) ?? new Describe;
+        if ($Describe->output_as) {
+            $classname = $Describe->output_as;
             return (new $classname)->parse((array)$this);
         }
 
@@ -163,26 +149,16 @@ trait ServiceModel
     public function validate(): self
     {
         $ReflectionClass = new ReflectionClass($this);
-        $DescribeModel = new DescribeModel;
-        if (count($ReflectionClass->getAttributes())) {
-            foreach ($ReflectionClass->getAttributes() as $RefAttribute) {
-                if ($RefAttribute->getName() === DescribeModel::class) {
-                    $classname = $RefAttribute->getName();
-                    $DescribeModel = new $classname(...$RefAttribute->getArguments());
-                }
-            }
-        }
-
+        $DescribeModel = ztp_get_Describe($ReflectionClass->getAttributes());
         foreach ($ReflectionClass->getProperties() as $Property) {
-            $name = $Property->getName();
-            if ($DescribeModel->strict && !isset($this->{$name}) && !$Property->getType()->allowsNull()) {
-                throw new ValidationException("Property $name is not set");
+            $Describe = ztp_merge_Describe($DescribeModel, ztp_get_Describe($Property->getAttributes()));
+            if ($Describe->strict && !isset($this->{$Property->getName()}) && !$Property->getType()->allowsNull()) {
+                throw new ValidationException("Property {$Property->getName()} is not set");
             }
-            if ($DescribeModel->require_typed_properties && $Property->getType() === null) {
-                throw new ValidationException("Property $name must have a type.");
+            if ($Describe->require_typed_properties && $Property->getType() === null) {
+                throw new ValidationException("Property {$Property->getName()} must have a type.");
             }
         }
-
         return $this;
     }
 }

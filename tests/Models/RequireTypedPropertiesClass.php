@@ -2,12 +2,10 @@
 
 namespace Zerotoprod\AppServiceModel\Tests\Models;
 
-use Zerotoprod\ServiceModel\Attributes\DescribeModel;
+use Zerotoprod\ServiceModel\Attributes\Describe;
 use Zerotoprod\ServiceModel\ServiceModel;
 
-#[DescribeModel([
-    'require_typed_properties' => true,
-])]
+#[Describe(['require_typed_properties' => true])]
 class RequireTypedPropertiesClass
 {
     use ServiceModel;

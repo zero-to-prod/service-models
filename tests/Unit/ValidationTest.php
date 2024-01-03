@@ -1,6 +1,7 @@
 <?php
 
 use Zerotoprod\AppServiceModel\Tests\Models\Child;
+use Zerotoprod\AppServiceModel\Tests\Models\StrictChild;
 use Zerotoprod\AppServiceModel\Tests\Models\ValidationClass;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
@@ -29,7 +30,8 @@ test('does not validate child recursive', function () {
             Child::id => 1,
         ],
         ValidationClass::strict_child => [
-            Child::id => 1,
+            StrictChild::id => 1,
+            StrictChild::name => 'name',
         ],
     ])->validate();
 })->throwsNoExceptions();
