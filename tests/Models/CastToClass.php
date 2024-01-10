@@ -18,6 +18,7 @@ class CastToClass
     public const custom_classes_1 = 'custom_classes_1';
     public const custom_class = 'custom_class';
     public const custom_class_1 = 'custom_class_1';
+    public const custom_class_with_constructor = 'custom_class_with_constructor';
     public readonly DateTime $time;
     #[CastToClasses(MockStringEnum::class)]
     public readonly array $enums;
@@ -32,4 +33,5 @@ class CastToClass
     public readonly array $custom_classes_1;
     public readonly CustomCast $custom_class;
     public readonly CustomCastOne $custom_class_1;
+    public readonly CustomCastWithConstructor $custom_class_with_constructor;
 }

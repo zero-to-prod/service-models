@@ -108,6 +108,11 @@ trait ServiceModel
                 if ($Cache->remember($model_classname . '::class',
                     fn() => class_exists($model_classname))
                 ) {
+                    if (is_a($value, $model_classname)) {
+                        $self->{$key} = $value;
+                        continue;
+                    }
+
                     $self->{$key} = is_array($value)
                         ? new $model_classname(...$value)
                         : new $model_classname($value);
