@@ -76,7 +76,7 @@ trait ServiceModel
             }
 
             $cache_key = static::class . '::' . $key;
-            $ReflectionProperty = $Cache->remember($cache_key, fn() => $ReflectionClass->getProperty($key));
+            $ReflectionProperty = $ReflectionClass->getProperty($key);
             $model_classname = $Cache->remember($cache_key . '::type',
                 fn() => $ReflectionProperty->getType()?->getName() ?? 'string'
             );
