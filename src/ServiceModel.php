@@ -139,7 +139,7 @@ trait ServiceModel
                 }
             }
 
-            $self->{$key} = match ($attribute_classname) {
+            $remapped_value = match ($attribute_classname) {
                 CastUsing::class => is_array($value)
                     ? $model_classname::$attribute_argument_0(...$value)
                     : $model_classname::$attribute_argument_0($value),
@@ -147,6 +147,15 @@ trait ServiceModel
                     ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
                     : (new $attribute_classname($attribute_argument_0))->parse((array)$value),
             };
+
+            if (method_exists($model_classname, 'parse')) {
+                $self->{$key} = count($ReflectionAttribute->getArguments()) > 1
+                    ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse($remapped_value)
+                    : (new $attribute_classname($attribute_argument_0))->parse($remapped_value);
+                continue;
+            }
+
+            $self->{$key} = $remapped_value;
         }
 
         $self->afterMake($items);

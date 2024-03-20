@@ -2,6 +2,7 @@
 
 use Zerotoprod\AppServiceModel\Tests\Models\MapFromDto;
 use Zerotoprod\AppServiceModel\Tests\Models\MapFromNestedDto;
+use Zerotoprod\AppServiceModel\Tests\Models\SmokeTest\Carbon;
 
 test('map from', function () {
     $MapFromDto = MapFromDto::make([
@@ -44,3 +45,19 @@ test('map from nested', function () {
         ->and($MapFromDto->value3)->toBe('three_nested_nested_value')
         ->and($MapFromDto->test)->toBe('test');
 });
+
+test('map casted', function () {
+    $MapFromDto = MapFromNestedDto::make([
+        'map_from_casted' => ['2021-01-01 00:00:00']
+    ]);
+
+    expect($MapFromDto->map_from_casted)->toBeInstanceOf(Carbon::class);
+});
+
+//test('map from nested 0', function () {
+//    $MapFromDto = MapFromNestedDto::make([
+//        'nested_value' => ['test22']
+//    ]);
+//
+//    expect($MapFromDto->map_from_nested)->toBe('test22');
+//});
