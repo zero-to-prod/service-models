@@ -113,6 +113,11 @@ trait ServiceModel
                         continue;
                     }
 
+                    if (is_a($value, 'Illuminate\Support\Collection')) {
+                        $self->{$key} = $value;
+                        continue;
+                    }
+
                     $self->{$key} = is_array($value)
                         ? new $model_classname(...$value)
                         : new $model_classname($value);
