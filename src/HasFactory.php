@@ -6,10 +6,11 @@ trait HasFactory
 {
     public static function factory(...$parameters): Factory
     {
-        /** @var Factory $factory */
-        $factory = static::$factory;
+        return self::getFactory()->state(is_array($parameters[0] ?? null) ? $parameters[0] : ($parameters[1] ?? []));
+    }
 
-        return (new $factory)
-            ->state(is_array($parameters[0] ?? null) ? $parameters[0] : ($parameters[1] ?? []));
+    public static function getFactory(): Factory
+    {
+        return (new static::$factory);
     }
 }
