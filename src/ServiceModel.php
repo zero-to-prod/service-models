@@ -83,6 +83,11 @@ trait ServiceModel
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
 
             if (!$ReflectionAttribute) {
+                // Objects
+                if(is_object($value) && $model_classname === get_class($value) && class_exists(get_class($value))){
+                    $self->{$key} = $value;
+                    continue;
+                }
 
                 // ServiceModels
                 if (method_exists($model_classname, 'make')) {
