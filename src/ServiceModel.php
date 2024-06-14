@@ -89,7 +89,7 @@ trait ServiceModel
                     $self->{$key} = $model_classname::make($value);
                     continue;
                 }
-
+                dd($value);
                 // Enums
                 if (isset($value->value)) {
                     $self->{$key} = $model_classname::tryFrom($value->value);
