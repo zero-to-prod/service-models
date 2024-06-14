@@ -6,7 +6,6 @@ use ReflectionClass;
 use Zerotoprod\ServiceModel\Attributes\CastUsing;
 use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ToArray;
-use Zerotoprod\ServiceModel\Cache\Cache;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
 trait ServiceModel
@@ -21,9 +20,7 @@ trait ServiceModel
         }
 
         $self = new self;
-
-        $Cache = Cache::getInstance();
-        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($self));
+        $ReflectionClass = new ReflectionClass(new self);
         $using_strict = in_array(Strict::class, $ReflectionClass->getTraitNames(), true);
 
         if (!$items || !(is_array($items) || is_object($items))) {
@@ -35,8 +32,8 @@ trait ServiceModel
         }
 
         foreach ($items as $key => $value) {
-            $Properties = $Cache->remember(static::class . '::properties', fn() => $ReflectionClass->getProperties());
-            $classnames = $Cache->remember(static::class . '::classnames', function () use ($Properties) {
+            $Properties = $ReflectionClass->getProperties();
+            $classnames = function () use ($Properties) {
                 $classnames = [];
                 foreach ($Properties as $Property) {
                     $attributes = $Property->getAttributes();
@@ -47,9 +44,9 @@ trait ServiceModel
                 }
 
                 return $classnames;
-            });
+            };
 
-            if (in_array(MapFrom::class, $classnames, true)) {
+            if (in_array(MapFrom::class, $classnames(), true)) {
                 foreach ($Properties as $Property) {
                     $attributes = $Property->getAttributes();
 
@@ -75,16 +72,14 @@ trait ServiceModel
                 continue;
             }
 
-            $cache_key = static::class . '::' . $key;
+
             $ReflectionProperty = $ReflectionClass->getProperty($key);
-            $model_classname = $Cache->remember($cache_key . '::type',
-                fn() => $ReflectionProperty->getType()?->getName() ?? 'string'
-            );
+            $model_classname = $ReflectionProperty->getType()?->getName() ?? 'string';
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
 
             if (!$ReflectionAttribute) {
                 // Objects
-                if(is_object($value) && $model_classname === get_class($value) && class_exists(get_class($value))){
+                if (is_object($value) && $model_classname === get_class($value) && class_exists(get_class($value))) {
                     $self->{$key} = $value;
                     continue;
                 }
@@ -102,17 +97,13 @@ trait ServiceModel
                 }
 
                 // Enum values
-                if ($Cache->remember($model_classname . '::enum',
-                    fn() => enum_exists($model_classname))
-                ) {
+                if (enum_exists($model_classname)) {
                     $self->{$key} = $model_classname::tryFrom($value);
                     continue;
                 }
 
                 // Classes
-                if ($Cache->remember($model_classname . '::class',
-                    fn() => class_exists($model_classname))
-                ) {
+                if (class_exists($model_classname)) {
                     if (is_a($value, $model_classname)) {
                         $self->{$key} = $value;
                         continue;
@@ -138,10 +129,8 @@ trait ServiceModel
             $attribute_classname = $ReflectionAttribute->getName();
 
             // Cast to array
-            if ($Cache->remember($attribute_argument_0 . '::cast',
-                fn() => (is_object($attribute_argument_0) || is_string($attribute_argument_0))
-                    && method_exists($attribute_argument_0, 'make'))
-            ) {
+            if ((is_object($attribute_argument_0) || is_string($attribute_argument_0))
+                && method_exists($attribute_argument_0, 'make')) {
                 $trait_names = (new ReflectionClass($attribute_argument_0))->getTraitNames();
                 if (in_array(ServiceModel::class, $trait_names, true)) {
                     $self->{$key} = (new $attribute_classname($attribute_argument_0))->parse((array)$value);
@@ -188,8 +177,7 @@ trait ServiceModel
 
     public function validate(): self
     {
-        $Cache = Cache::getInstance();
-        $ReflectionClass = $Cache->remember(static::class, fn() => new ReflectionClass($this));
+        $ReflectionClass = new ReflectionClass($this);
 
         foreach ($ReflectionClass->getProperties() as $Property) {
             if (!$Property->getType()->allowsNull()) {
