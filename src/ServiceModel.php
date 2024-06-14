@@ -72,12 +72,12 @@ trait ServiceModel
                 continue;
             }
 
-
             $ReflectionProperty = $ReflectionClass->getProperty($key);
             $model_classname = $ReflectionProperty->getType()?->getName() ?? 'string';
             $ReflectionAttribute = $ReflectionProperty->getAttributes()[0] ?? null;
 
             if (!$ReflectionAttribute) {
+
                 // Objects
                 if (is_object($value) && $model_classname === get_class($value) && class_exists(get_class($value))) {
                     $self->{$key} = $value;
@@ -87,12 +87,6 @@ trait ServiceModel
                 // ServiceModels
                 if (method_exists($model_classname, 'make')) {
                     $self->{$key} = $model_classname::make($value);
-                    continue;
-                }
-
-                // Enums
-                if (isset($value->value)) {
-                    $self->{$key} = $model_classname::tryFrom($value->value);
                     continue;
                 }
 
@@ -109,11 +103,6 @@ trait ServiceModel
                         continue;
                     }
 
-                    if (is_a($value, 'Illuminate\Support\Collection')) {
-                        $self->{$key} = $value;
-                        continue;
-                    }
-
                     $self->{$key} = is_array($value)
                         ? new $model_classname(...$value)
                         : new $model_classname($value);
@@ -121,7 +110,6 @@ trait ServiceModel
                 }
 
                 $self->{$key} = $value;
-
                 continue;
             }
 
