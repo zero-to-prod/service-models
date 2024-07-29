@@ -2,6 +2,7 @@
 
 use Zerotoprod\AppServiceModel\Tests\Models\Child;
 use Zerotoprod\AppServiceModel\Tests\Models\ChildWithoutTrait;
+use Zerotoprod\AppServiceModel\Tests\Models\CustomAttributeClass;
 use Zerotoprod\AppServiceModel\Tests\Models\EmptyClass;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevel;
 use Zerotoprod\AppServiceModel\Tests\Models\TopLevelCast;
@@ -53,4 +54,12 @@ test('cast wrong service model', function () {
 
     expect($TopLevel->child)->toBeInstanceOf(Child::class)
         ->and($TopLevel->child->name)->toBe('child name');
+});
+
+test('does not cast with no parse method', function () {
+    $TopLevel = CustomAttributeClass::make([
+        CustomAttributeClass::value => ['test']
+    ]);
+
+    expect($TopLevel->value)->toBe(['test']);
 });

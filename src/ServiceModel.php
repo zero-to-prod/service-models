@@ -126,14 +126,21 @@ trait ServiceModel
                 }
             }
 
-            $self->{$key} = match ($attribute_classname) {
-                CastUsing::class => is_array($value)
-                    ? $model_classname::$attribute_argument_0(...$value)
-                    : $model_classname::$attribute_argument_0($value),
-                default => count($ReflectionAttribute->getArguments()) > 1
-                    ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
-                    : (new $attribute_classname($attribute_argument_0))->parse((array)$value),
-            };
+            if ($attribute_classname === CastUsing::class) {
+                $self->{$key} = is_array($value)
+                        ? $model_classname::$attribute_argument_0(...$value)
+                        : $model_classname::$attribute_argument_0($value);
+                continue;
+            }
+
+            if (method_exists($attribute_classname, 'parse')) {
+                $self->{$key} = count($ReflectionAttribute->getArguments()) > 1
+                        ? (new $attribute_classname(...$ReflectionAttribute->getArguments()))->parse((array)$value)
+                        : (new $attribute_classname($attribute_argument_0))->parse((array)$value);
+                continue;
+            }
+
+            $self->{$key} = $value;
         }
 
         $self->afterMake($items);
