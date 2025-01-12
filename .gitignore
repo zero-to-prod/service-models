@@ -94,3 +94,6 @@ fabric.properties
 /composer.lock
 /infection.html
 /infection.json
+
+.vendor/
+.env
