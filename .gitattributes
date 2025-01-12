@@ -8,6 +8,7 @@
 /dock                     export-ignore
 /docker-compose.yml       export-ignore
 /infection.json5          export-ignore
+/LICENCE                  export-ignore
 /LICENSE.md               export-ignore
 /phpunit.xml              export-ignore
 /README.md                export-ignore
