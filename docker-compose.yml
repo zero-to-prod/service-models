@@ -1,13 +1,108 @@
 services:
-  app:
+  php8.1:
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.1:/app/vendor
     build:
-      context: ./docker/app
-    working_dir: /app
+      context: ./docker/8.1
+      target: base
+
+  debug8.1:
+    extends:
+      service: php8.1
     volumes:
-      - .:/app
-  install:
-    image: composer:latest
+      - ./:/app:delegated
+      - ./docker/8.1:/usr/local/etc/php
+      - ./.vendor/php8.1:/app/vendor
+    build:
+      target: debug
+
+  composer8.1:
+    extends:
+      service: php8.1
     volumes:
-      - ./vendor:/app/vendor
-      - ./:/app
-    command: install
+      - ./:/app:delegated
+      - ./.vendor/php8.1:/app/vendor
+    build:
+      target: composer
+
+  php8.2:
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.2:/app/vendor
+    build:
+      context: ./docker/8.2
+      target: base
+
+  debug8.2:
+    extends:
+      service: php8.2
+    volumes:
+      - ./:/app:delegated
+      - ./docker/8.2:/usr/local/etc/php
+      - ./.vendor/php8.2:/app/vendor
+    build:
+      target: debug
+
+  composer8.2:
+    extends:
+      service: php8.2
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.2:/app/vendor
+    build:
+      target: composer
+
+  php8.3:
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.3:/app/vendor
+    build:
+      context: ./docker/8.3
+      target: base
+
+  debug8.3:
+    extends:
+      service: php8.3
+    volumes:
+      - ./:/app:delegated
+      - ./docker/8.3:/usr/local/etc/php
+      - ./.vendor/php8.3:/app/vendor
+    build:
+      target: debug
+
+  composer8.3:
+    extends:
+      service: php8.3
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.3:/app/vendor
+    build:
+      target: composer
+
+  php8.4:
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.4:/app/vendor
+    build:
+      context: ./docker/8.4
+      target: base
+
+  debug8.4:
+    extends:
+      service: php8.4
+    volumes:
+      - ./:/app:delegated
+      - ./docker/8.4:/usr/local/etc/php
+      - ./.vendor/php8.4:/app/vendor
+    build:
+      target: debug
+
+  composer8.4:
+    extends:
+      service: php8.4
+    volumes:
+      - ./:/app:delegated
+      - ./.vendor/php8.4:/app/vendor
+    build:
+      target: composer
