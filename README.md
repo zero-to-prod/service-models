@@ -6,6 +6,48 @@
 ![Downloads](https://img.shields.io/packagist/dt/zero-to-prod/service-model.svg?style=flat-square&#41;]&#40;https://packagist.org/packages/zero-to-prod/service-model&#41)
 [![codecov](https://codecov.io/gh/zero-to-prod/service-models/graph/badge.svg?token=A3PT9316HO)](https://codecov.io/gh/zero-to-prod/service-models)
 
+## Contents
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Setting Up Your Model](#setting-up-your-model)
+    - [Accessing Type Safe Properties](#accessing-type-safe-properties)
+- [Factory Support](#factory-support)
+- [Basic Implementation](#basic-implementation)
+- [Native Object Support](#native-object-support)
+- [Enums](#enums)
+- [Classes](#classes)
+    - [Simple Class Casting](#simple-class-casting)
+    - [Using a Class Method for Parsing](#using-a-class-method-for-parsing)
+    - [One-to-many Class Casting](#one-to-many-casting)
+- [Value Casting](#value-casting)
+- [One-to-many Casting](#one-to-many-casting)
+- [Plugins](#plugins)
+- [Factories](#factories)
+- [Extending the `ServiceModel` Trait](#extending-the-servicemodel-trait)
+- [Mapping](#mapping)
+    - [Renaming](#renaming)
+    - [Mapping Nested Properties](#mapping-nested-properties)
+- [Validation](#validation)
+  - [Using the `Strict` Trait](#using-the-strict-trait)
+  - [Manually Validating](#manually-validating)
+- [Lifecycle Hooks](#lifecycle-hooks)
+- [Caching](#caching)
+- [Resource Support](#resource-support)
+  - [Build Your Own Resource Transformer](#build-your-own-resource-transformer)
+- [Upgrading to v2](#upgrading-to-v2)
+- [Local Development](#local-development)
+    - [Prerequisites](#prerequisites)
+    - [Initializing](#initializing)
+    - [Testing](#testing)
+    - [Configuration](#configuration)
+- [Contributing](#contributing)
+
+## Introduction
+
 A modern approach to [extensible](#extending-the-servicemodel-trait), [typesafe](#setting-up-your-model) Data Transfer
 Objects (DTOs) with [factory](#factories) support.
 
@@ -15,6 +57,10 @@ typesafe [DTOs](#setting-up-your-model).
 
 In the [Extract Transform Load](https://en.wikipedia.org/wiki/Extract,_transform,_load) (ETL) process, this package
 assist in the **_Transformation_** of data into a model.
+
+## Requirements
+
+- PHP 8.1 or higher.
 
 ## Features
 
@@ -31,15 +77,17 @@ assist in the **_Transformation_** of data into a model.
   implement your own.
 - **Fast**: Designed with [performance](#caching) in mind.
 
-## Getting Started
+## Installation
 
 If upgrading from v1, see the [upgrade guide](#upgrading-to-v2).
 
-Install the `service-model` package with composer.
+Install `Zerotoprod\ServiceModel` via [Composer](https://getcomposer.org/):
 
 ```bash
 composer require zero-to-prod/service-model
 ```
+
+This will add the package to your project’s dependencies and create an autoloader entry for it.
 
 Use the `ServiceModel` trait in your model.
 
@@ -369,7 +417,7 @@ $order->statuses[0]; // Status::pending
 $order->statuses[1]->value; // completed
 ```
 
-### Classes
+## Classes
 
 Sometimes you may want to cast to a class you cannot use the `ServiceModel` trait in.
 
@@ -565,7 +613,7 @@ $order->created_at; // Carbon::class
 $order->created_at->toDateTimeString(); // '2021-01-01 00:00:00'
 ```
 
-## `One-to-many` Casting
+## One-to-many Casting
 
 Use the `CastToArray` attribute to cast an array of classes.
 
@@ -1120,3 +1168,65 @@ class CollectionOf implements CanParse
 ```
 
 Please test your application thoroughly after making these changes to ensure everything works as expected.
+
+## Local Development
+
+This project provides a convenient [dock](https://github.com/zero-to-prod/dock) script to simplify local development workflows within Docker
+containers.
+
+You can use this script to initialize the project, manage Composer dependencies, and run tests in a consistent PHP environment.
+
+### Prerequisites
+
+- Docker installed and running
+- A `.env` file (created automatically via the `dock init` command, if it doesn’t already exist)
+
+### Initializing
+
+Use the following commands to set up the project:
+
+```shell
+sh dock init
+sh dock composer update
+```
+
+### Testing
+
+This command runs PHPUnit inside the Docker container, using the PHP version specified in your `.env` file.
+You can modify or extend this script to include additional tests or commands as needed.
+
+```shell
+sh dock test
+```
+
+Run the test suite with all versions of php:
+
+```shell
+sh test.sh
+```
+
+### Configuration
+
+Before starting development, verify that your `.env` file contains the correct settings.
+
+You can specify which PHP version to use for local development, debugging, and Composer operations by updating these variables in your `.env` file:
+
+```dotenv
+PHP_VERSION=8.1
+PHP_DEBUG=8.1
+PHP_COMPOSER=8.1
+```
+
+Make sure these values reflect the PHP versions you intend to use.
+If the `.env` file does not exist, run the `sh dock init` command to create one from the `.env.example` template.
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome!
+Feel free to check the [issues](https://github.com/zero-to-prod/service-models/issues) page if you want to contribute.
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a new Pull Request.
