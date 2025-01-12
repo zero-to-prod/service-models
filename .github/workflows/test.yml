@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ["8.4", "8.3", "8.2", "8.1"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env
+        run: touch .env
+
+      - name: Set PHP version in .env
+        run: |
+          echo "PHP_COMPOSER=${{ matrix.php-version }}" >> .env
+          echo "PHP_VERSION=${{ matrix.php-version }}" >> .env
+
+      - name: Install dependencies (composer update) for PHP
+        run: sh dock composer update
+
+      - name: Run PHPUnit tests for PHP
+        run: sh dock test
