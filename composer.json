@@ -1,49 +1,50 @@
 {
-    "name": "zero-to-prod/service-model",
-    "description": "A modern approach to extensible, typesafe DTOs with factory support.",
-    "keywords": [
-        "service models",
-        "dto",
-        "factory",
-        "model",
-        "models",
-        "service-model",
-        "service model",
-        "zero-to-prod",
-        "data transfer object"
-    ],
-    "homepage": "https://github.com/zero-to-prod/service-models",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "David Smith",
-            "email": "dave0016@gmail.com",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^8.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "Zerotoprod\\ServiceModel\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Zerotoprod\\AppServiceModel\\Tests\\": "tests/"
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require-dev": {
-        "pestphp/pest": "^2.19",
-      "symfony/var-dumper": "*",
-      "pestphp/pest-plugin-type-coverage": "^2.8"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+  "name": "zero-to-prod/service-model",
+  "description": "A modern approach to extensible, typesafe DTOs with factory support.",
+  "keywords": [
+    "service models",
+    "dto",
+    "factory",
+    "model",
+    "models",
+    "service-model",
+    "service model",
+    "zero-to-prod",
+    "data transfer object"
+  ],
+  "homepage": "https://github.com/zero-to-prod/service-models",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "David Smith",
+      "email": "dave0016@gmail.com",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^8.1",
+    "zero-to-prod/package-helper": "^1.1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Zerotoprod\\ServiceModel\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Zerotoprod\\AppServiceModel\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "pestphp/pest": "^2.19",
+    "symfony/var-dumper": "*",
+    "pestphp/pest-plugin-type-coverage": "^2.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }
