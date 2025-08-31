@@ -8,8 +8,14 @@ use Zerotoprod\ServiceModel\Attributes\MapFrom;
 use Zerotoprod\ServiceModel\Attributes\ToArray;
 use Zerotoprod\ServiceModel\Exceptions\ValidationException;
 
+/**
+ * @link https://github.com/zero-to-prod/service-models
+ */
 trait ServiceModel
 {
+    /**
+     * @link https://github.com/zero-to-prod/service-models
+     */
     public static function make($items = null): self
     {
         if (is_string($items)) {
@@ -152,11 +158,17 @@ trait ServiceModel
         return $self;
     }
 
+    /**
+     * @link https://github.com/zero-to-prod/service-models
+     */
     public function afterMake($items): void
     {
     }
 
-    /** @noinspection PhpUndefinedMethodInspection */
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     * @link https://github.com/zero-to-prod/service-models
+     */
     public function toResource(): array
     {
         $ReflectionClass = new ReflectionClass($this);
@@ -170,6 +182,9 @@ trait ServiceModel
         return (new $classname)->parse((array)$this);
     }
 
+    /**
+     * @link https://github.com/zero-to-prod/service-models
+     */
     public function validate(): self
     {
         $ReflectionClass = new ReflectionClass($this);
